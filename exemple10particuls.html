@@ -5,14 +5,24 @@
     <title>10 Particles in a 3D Box</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: inline-block; width: 150px; }
-        .input-group input { width: 100px; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        .main-container {
+            max-width: 850px;
+            margin: 40px auto 0 auto;
+            padding: 24px 10px 40px 10px;
+            background: none;
+            text-align: center;
+        }
         nav {
             background: #333;
             padding: 10px 0 10px 0;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
         nav .nav-inner {
             max-width: 800px;
@@ -28,6 +38,48 @@
             text-decoration: none;
             font-weight: bold;
             font-size: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #ffd700;
+        }
+        h1 {
+            color: #222;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+        .input-group label {
+            font-weight: 500;
+            width: auto;
+            min-width: 120px;
+            text-align: right;
+        }
+        .input-group input[type=number] {
+            width: 120px;
+            padding: 6px 8px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        button {
+            padding: 8px 18px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #388e3c;
         }
         #graph {
             width: 100%;
@@ -35,21 +87,24 @@
             height: 60vw;
             max-height: 80vh;
             min-height: 300px;
+            margin: 0 auto;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
         }
-        @media (max-width: 600px) {
-            body {
-                padding: 5px;
+        @media (max-width: 700px) {
+            .main-container {
+                padding: 8px 2px 24px 2px;
             }
-            nav .nav-inner {
+            .input-group {
                 flex-direction: column;
-                gap: 10px;
+                align-items: stretch;
+                gap: 6px;
             }
             .input-group label, .input-group input {
                 width: 100%;
-                display: block;
-            }
-            .input-group input {
-                margin-top: 5px;
+                min-width: 0;
+                text-align: left;
             }
             #graph {
                 height: 300px;
@@ -67,25 +122,25 @@
             <a href="coords_benchmark.html">Coords Benchmark</a>
         </div>
     </nav>
-    <h1>10 Particles in a 3D Box</h1>
-
-    <!-- Inputs -->
-    <div class="input-group">
-        <label for="boxLength">Box Length (L):</label>
-        <input type="number" id="boxLength" value="10">
+    <div class="main-container">
+        <h1>10 Particles in a 3D Box</h1>
+        <!-- Inputs -->
+        <div class="input-group">
+            <label for="boxLength">Box Length (L):</label>
+            <input type="number" id="boxLength" value="10">
+        </div>
+        <div class="input-group">
+            <label for="particleMass">Particle Mass (m):</label>
+            <input type="number" id="particleMass" value="1">
+        </div>
+        <div class="input-group">
+            <label for="time">Time (t):</label>
+            <input type="number" id="time" value="0">
+        </div>
+        <button onclick="updateGraph()">Update Graph</button>
+        <!-- Graph -->
+        <div id="graph"></div>
     </div>
-    <div class="input-group">
-        <label for="particleMass">Particle Mass (m):</label>
-        <input type="number" id="particleMass" value="1">
-    </div>
-    <div class="input-group">
-        <label for="time">Time (t):</label>
-        <input type="number" id="time" value="0">
-    </div>
-    <button onclick="updateGraph()">Update Graph</button>
-
-    <!-- Graph -->
-    <div id="graph"></div>
 
     <script>
         const hbar = 1.0545718e-34; // Reduced Planck's constant

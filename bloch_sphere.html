@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bloch Sphere Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background: #333;
+            padding: 10px 0 10px 0;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        nav .nav-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #ffd700;
+        }
+        .main-container {
+            max-width: 850px;
+            margin: 40px auto 0 auto;
+            padding: 24px 10px 40px 10px;
+            background: none;
+            text-align: center;
+        }
+        #controls {
+            margin-bottom: 20px;
+        }
+        label {
+            margin-right: 10px;
+        }
+        .explanation {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 24px 20px 20px 20px;
+            border-radius: 12px;
+            text-align: left;
+        }
+        #plot {
+            width: 100%;
+            max-width: 700px;
+            height: 60vw;
+            max-height: 80vh;
+            min-height: 300px;
+            margin: 0 auto;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+        #probabilities {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        @media (max-width: 700px) {
+            .main-container {
+                padding: 8px 2px 24px 2px;
+            }
+            .explanation {
+                padding: 12px 6px 12px 6px;
+                font-size: 0.97rem;
+            }
+            #plot {
+                height: 300px;
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="enteglment.html">Entanglement</a>
+            <a href="exemple10particuls.html">10 Particles</a>
+            <a href="quntum.html">Photonics</a>
+            <a href="coords_benchmark.html">Coords Benchmark</a>
+            <a href="bloch_sphere.html">Bloch Sphere</a>
+        </div>
+    </nav>
+    <div class="main-container">
+        <h1>Bloch Sphere Visualization</h1>
+        <div class="explanation">
+            <p>
+                The <b>Bloch sphere</b> is a geometrical representation of the pure state space of a two-level quantum mechanical system (qubit). Any pure state of a single qubit can be represented as a point on the surface of the sphere, parameterized by two angles: <b>θ</b> (theta, polar angle) and <b>φ</b> (phi, azimuthal angle).
+            </p>
+            <ul>
+                <li><b>θ (theta):</b> Angle from the positive Z-axis (0 to π)</li>
+                <li><b>φ (phi):</b> Angle from the positive X-axis in the X-Y plane (0 to 2π)</li>
+            </ul>
+            <p>
+                The quantum state is: <br>
+                <code>|ψ⟩ = cos(θ/2)|0⟩ + e<sup>iφ</sup>sin(θ/2)|1⟩</code>
+            </p>
+            <p>
+                The probabilities of measuring the state in the <b>|0⟩</b> or <b>|1⟩</b> basis are:
+                <ul>
+                    <li>P(|0⟩) = cos²(θ/2)</li>
+                    <li>P(|1⟩) = sin²(θ/2)</li>
+                </ul>
+            </p>
+        </div>
+        <div id="controls">
+            <label for="theta">θ (theta, 0 to π): <span id="theta-value"></span></label>
+            <input type="range" id="theta" min="0" max="3.1416" step="0.01" value="0.7854">
+            <br>
+            <label for="phi">φ (phi, 0 to 2π): <span id="phi-value"></span></label>
+            <input type="range" id="phi" min="0" max="6.2832" step="0.01" value="1.5708">
+        </div>
+        <div id="plot"></div>
+        <div id="probabilities"></div>
+    </div>
+    <script>
+        function plotBlochSphere(theta, phi) {
+            // Bloch sphere surface
+            let u = [], v = [];
+            for (let i = 0; i <= 100; i++) {
+                u.push(2 * Math.PI * i / 100);
+                v.push(Math.PI * i / 100);
+            }
+            let x = [], y = [], z = [];
+            for (let i = 0; i < u.length; i++) {
+                x[i] = [];
+                y[i] = [];
+                z[i] = [];
+                for (let j = 0; j < v.length; j++) {
+                    x[i][j] = Math.cos(u[i]) * Math.sin(v[j]);
+                    y[i][j] = Math.sin(u[i]) * Math.sin(v[j]);
+                    z[i][j] = Math.cos(v[j]);
+                }
+            }
+            // State vector
+            let x_state = Math.sin(theta) * Math.cos(phi);
+            let y_state = Math.sin(theta) * Math.sin(phi);
+            let z_state = Math.cos(theta);
+            // Axes
+            let axes = [
+                {
+                    type: 'scatter3d',
+                    mode: 'lines',
+                    x: [0, 1], y: [0, 0], z: [0, 0],
+                    line: {color: 'red', width: 5},
+                    name: 'X-axis',
+                    showlegend: true
+                },
+                {
+                    type: 'scatter3d',
+                    mode: 'lines',
+                    x: [0, 0], y: [0, 1], z: [0, 0],
+                    line: {color: 'green', width: 5},
+                    name: 'Y-axis',
+                    showlegend: true
+                },
+                {
+                    type: 'scatter3d',
+                    mode: 'lines',
+                    x: [0, 0], y: [0, 0], z: [0, 1],
+                    line: {color: 'blue', width: 5},
+                    name: 'Z-axis',
+                    showlegend: true
+                }
+            ];
+            // Basis states |0> and |1>
+            let basis = [
+                {
+                    type: 'scatter3d',
+                    mode: 'markers+text',
+                    x: [0], y: [0], z: [1],
+                    marker: {color: 'blue', size: 8},
+                    text: ['|0⟩'],
+                    textposition: 'top center',
+                    name: '|0⟩',
+                    showlegend: true
+                },
+                {
+                    type: 'scatter3d',
+                    mode: 'markers+text',
+                    x: [0], y: [0], z: [-1],
+                    marker: {color: 'blue', size: 8},
+                    text: ['|1⟩'],
+                    textposition: 'bottom center',
+                    name: '|1⟩',
+                    showlegend: true
+                }
+            ];
+            // State vector
+            let stateVector = {
+                type: 'scatter3d',
+                mode: 'lines+markers+text',
+                x: [0, x_state], y: [0, y_state], z: [0, z_state],
+                line: {color: 'purple', width: 8},
+                marker: {color: 'purple', size: 8},
+                text: ['', '|ψ⟩'],
+                textposition: 'top center',
+                name: 'State Vector',
+                showlegend: true
+            };
+            // Bloch sphere surface
+            let sphere = {
+                type: 'surface',
+                x: x, y: y, z: z,
+                opacity: 0.15,
+                colorscale: [[0, 'lightblue'], [1, 'white']],
+                showscale: false,
+                hoverinfo: 'skip',
+                name: 'Bloch Sphere'
+            };
+            let data = [sphere, ...axes, ...basis, stateVector];
+            let layout = {
+                scene: {
+                    xaxis: {title: 'X', range: [-1.2, 1.2]},
+                    yaxis: {title: 'Y', range: [-1.2, 1.2]},
+                    zaxis: {title: 'Z', range: [-1.2, 1.2]},
+                    aspectmode: 'cube',
+                    camera: {eye: {x: 1.5, y: 1.5, z: 1.2}},
+                },
+                title: 'Bloch Sphere with Measurement Probabilities',
+                legend: {x: 0.8, y: 0.9},
+                margin: {l: 0, r: 0, b: 0, t: 40}
+            };
+            Plotly.newPlot('plot', data, layout, {displayModeBar: false});
+            // Probabilities
+            let prob_0 = Math.pow(Math.cos(theta / 2), 2);
+            let prob_1 = Math.pow(Math.sin(theta / 2), 2);
+            document.getElementById('probabilities').innerHTML =
+                `<b>Measurement Probabilities:</b><br>P(|0⟩) = ${prob_0.toFixed(2)}, P(|1⟩) = ${prob_1.toFixed(2)}`;
+        }
+        // Initial values
+        let theta = parseFloat(document.getElementById('theta').value);
+        let phi = parseFloat(document.getElementById('phi').value);
+        document.getElementById('theta-value').textContent = theta.toFixed(2);
+        document.getElementById('phi-value').textContent = phi.toFixed(2);
+        plotBlochSphere(theta, phi);
+        // Event listeners
+        document.getElementById('theta').addEventListener('input', function() {
+            theta = parseFloat(this.value);
+            document.getElementById('theta-value').textContent = theta.toFixed(2);
+            plotBlochSphere(theta, phi);
+        });
+        document.getElementById('phi').addEventListener('input', function() {
+            phi = parseFloat(this.value);
+            document.getElementById('phi-value').textContent = phi.toFixed(2);
+            plotBlochSphere(theta, phi);
+        });
+    </script>
+</body>
+</html> 

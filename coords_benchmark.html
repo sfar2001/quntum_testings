@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spherical to Cartesian Benchmark</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        nav { background: #333; padding: 10px 0; margin-bottom: 20px; }
+        nav .nav-inner { max-width: 800px; margin: 0 auto; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        nav a { color: white; text-decoration: none; font-weight: bold; font-size: 1rem; }
+        .container { background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.07); padding: 20px; }
+        .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        label { font-weight: bold; }
+        input[type=number] { width: 120px; padding: 5px; }
+        button { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .results { margin-top: 20px; background: #e9f7ef; padding: 15px; border-radius: 5px; }
+        @media (max-width: 600px) {
+            body { padding: 5px; }
+            nav .nav-inner { flex-direction: column; gap: 10px; }
+            .container { padding: 10px; }
+            .controls { flex-direction: column; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="enteglment.html">Entanglement</a>
+            <a href="exemple10particuls.html">10 Particles</a>
+            <a href="quntum.html">Photonics</a>
+            <a href="coords_benchmark.html">Coords Benchmark</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Spherical to Cartesian Benchmark</h1>
+        <p>Compare <b>vectorized</b> and <b>divide-and-conquer</b> algorithms for converting spherical coordinates (θ, φ) to Cartesian (x, y, z).</p>
+        <div class="controls">
+            <label for="numInputs">Number of Inputs:</label>
+            <input type="number" id="numInputs" value="1000000" min="1" max="20000000">
+            <button onclick="runBenchmarks()">Run Benchmarks</button>
+        </div>
+        <div class="results" id="results">Results will appear here.</div>
+        <h2>Algorithm Descriptions</h2>
+        <ul>
+            <li><b>Vectorized:</b> Uses array operations to compute all coordinates in a single pass.</li>
+            <li><b>Divide and Conquer:</b> Recursively splits the input arrays, computes results for each half, and merges them.</li>
+        </ul>
+    </div>
+    <script>
+        // Vectorized computation
+        function computeStateCoordinatesVectorized(theta, phi) {
+            const N = theta.length;
+            const x = new Float64Array(N);
+            const y = new Float64Array(N);
+            const z = new Float64Array(N);
+            for (let i = 0; i < N; ++i) {
+                x[i] = Math.sin(theta[i]) * Math.cos(phi[i]);
+                y[i] = Math.sin(theta[i]) * Math.sin(phi[i]);
+                z[i] = Math.cos(theta[i]);
+            }
+            // Return as array of [x, y, z]
+            return Array.from({length: N}, (_, i) => [x[i], y[i], z[i]]);
+        }
+
+        // Divide and conquer computation
+        function computeStateCoordinatesDivideAndConquer(theta, phi) {
+            function helper(start, end) {
+                if (end - start <= 10000) { // base case: small chunk
+                    const res = [];
+                    for (let i = start; i < end; ++i) {
+                        const x = Math.sin(theta[i]) * Math.cos(phi[i]);
+                        const y = Math.sin(theta[i]) * Math.sin(phi[i]);
+                        const z = Math.cos(theta[i]);
+                        res.push([x, y, z]);
+                    }
+                    return res;
+                } else {
+                    const mid = Math.floor((start + end) / 2);
+                    const left = helper(start, mid);
+                    const right = helper(mid, end);
+                    return left.concat(right);
+                }
+            }
+            return helper(0, theta.length);
+        }
+
+        // Generate random theta and phi arrays
+        function randomArray(size, min, max) {
+            const arr = new Float64Array(size);
+            for (let i = 0; i < size; ++i) {
+                arr[i] = Math.random() * (max - min) + min;
+            }
+            return arr;
+        }
+
+        function runBenchmarks() {
+            const numInputs = parseInt(document.getElementById('numInputs').value);
+            const theta = randomArray(numInputs, 0, Math.PI);
+            const phi = randomArray(numInputs, 0, 2 * Math.PI);
+            let t0, t1, resultsVec, resultsDC;
+
+            // Vectorized
+            t0 = performance.now();
+            resultsVec = computeStateCoordinatesVectorized(theta, phi);
+            t1 = performance.now();
+            const timeVec = t1 - t0;
+
+            // Divide and conquer
+            t0 = performance.now();
+            resultsDC = computeStateCoordinatesDivideAndConquer(theta, phi);
+            t1 = performance.now();
+            const timeDC = t1 - t0;
+
+            // Check correctness (compare a few random samples)
+            let correct = true;
+            for (let i = 0; i < 5; ++i) {
+                const idx = Math.floor(Math.random() * numInputs);
+                const a = resultsVec[idx];
+                const b = resultsDC[idx];
+                if (Math.abs(a[0] - b[0]) > 1e-12 || Math.abs(a[1] - b[1]) > 1e-12 || Math.abs(a[2] - b[2]) > 1e-12) {
+                    correct = false;
+                    break;
+                }
+            }
+
+            document.getElementById('results').innerHTML =
+                `<b>Processed ${numInputs.toLocaleString()} inputs</b><br>` +
+                `Vectorized: <b>${timeVec.toFixed(2)} ms</b><br>` +
+                `Divide & Conquer: <b>${timeDC.toFixed(2)} ms</b><br>` +
+                `Results match: <b style="color:${correct ? 'green' : 'red'}">${correct ? 'Yes' : 'No'}</b>`;
+        }
+    </script>
+</body>
+</html> 

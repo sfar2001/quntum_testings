@@ -6,9 +6,9 @@ A collection of interactive, educational web tools for exploring quantum mechani
 
 ## 🔗 Unified Navigation
 
-All tools are linked by a modern, responsive navigation bar for seamless switching between simulations and calculators.
-check the Project NOW!!! ==> https://inspiring-praline-f198cd.netlify.app/quntum.html
+All tools are linked by a modern, responsive navigation bar for seamless switching between simulations and calculators—including the new Bloch Sphere visualization.
 
+Check the Project NOW!!! ==> https://inspiring-praline-f198cd.netlify.app/quntum.html (All tools, including Bloch Sphere, are available from the navigation bar)
 
 ---
 
@@ -22,6 +22,19 @@ check the Project NOW!!! ==> https://inspiring-praline-f198cd.netlify.app/quntum
 - **State Information Panel:** Clear, real-time explanations of the current quantum state, measurement results, and the entanglement relationship.
 - **Reset Functionality:** Instantly reset the system to try new experiments.
 - **Mobile Friendly:** Layout, controls, and canvas adapt for small screens.
+
+---
+
+## 🌐 Bloch Sphere Visualization (`bloch_sphere.html`)
+
+**Explore the geometry of a single qubit state!**
+
+- **Interactive 3D Visualization:** Rotate and explore the Bloch sphere in your browser using Plotly.js.
+- **State Vector Control:** Adjust θ (theta) and φ (phi) with sliders to see how the quantum state vector moves on the sphere.
+- **Measurement Probabilities:** Instantly see the probabilities of measuring |0⟩ and |1⟩ for the current state.
+- **Detailed Explanations:** Learn about the Bloch sphere, the meaning of θ and φ, and the quantum state formula.
+- **Consistent Navigation:** Access all other quantum tools from the top navigation bar.
+- **Responsive Design:** Works beautifully on desktop and mobile.
 
 ---
 
@@ -75,8 +88,11 @@ check the Project NOW!!! ==> https://inspiring-praline-f198cd.netlify.app/quntum
 ## 📂 File Overview
 
 - `enteglment.html` — Quantum Entanglement Simulator
+- `bloch_sphere.html` — Bloch Sphere Visualization
 - `exemple10particuls.html` — 10 Particles in a 3D Box Visualization
 - `quntum.html` — Quantum Photonics Calculator & Schrödinger Equation Visualizer
+- `coords_benchmark.html` — Spherical to Cartesian Benchmark Tool
+- `index.html` — Redirects to main tool, includes navigation
 
 ---
 

@@ -23,6 +23,8 @@
             .controls { flex-direction: column; gap: 8px; }
         }
     </style>
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <nav>
@@ -36,6 +38,19 @@
     <div class="container">
         <h1>Spherical to Cartesian Benchmark</h1>
         <p>Compare <b>vectorized</b> and <b>divide-and-conquer</b> algorithms for converting spherical coordinates (θ, φ) to Cartesian (x, y, z).</p>
+        <div style="margin: 18px 0 18px 0; background: #f0f0fa; padding: 14px 18px; border-radius: 6px;">
+            <b>Conversion formulas:</b><br>
+            <span style="font-size:1.15em">
+            $$
+            \begin{aligned}
+            x &= \sin(\theta) \cos(\varphi) \\
+            y &= \sin(\theta) \sin(\varphi) \\
+            z &= \cos(\theta)
+            \end{aligned}
+            $$
+            </span>
+            <div style="font-size:0.95em;color:#666;margin-top:4px;">Where \(\theta\) is the polar angle (0 to \(\pi\)), and \(\varphi\) is the azimuthal angle (0 to \(2\pi\)).</div>
+        </div>
         <div class="controls">
             <label for="numInputs">Number of Inputs:</label>
             <input type="number" id="numInputs" value="1000000" min="1" max="20000000">
@@ -47,7 +62,19 @@
             <li><b>Vectorized:</b> Uses array operations to compute all coordinates in a single pass.</li>
             <li><b>Adam's Quantum Sorting:</b> Recursively splits the input arrays, computes results for each half, and merges them. (Inspired by divide-and-conquer, named for demonstration.)</li>
         </ul>
-        <p style="font-size:0.95em;color:#888;">Note: "Adam's Quantum Sorting" is a playful name for the recursive divide-and-conquer approach, as requested.</p>
+        <div style="margin: 18px 0 18px 0; background: #e8f4fa; padding: 14px 18px; border-radius: 6px;">
+            <b>Qubit Approach (Bloch Sphere Representation):</b><br>
+            <span style="font-size:1.08em">
+            In quantum computing, a single qubit state can be represented on the Bloch sphere using the same spherical coordinates (θ, φ):
+            </span>
+            <div style="margin: 10px 0 10px 0; font-size:1.15em;">
+            $$
+            |\psi\rangle = \cos\left(\frac{\theta}{2}\right)|0\rangle + e^{i\varphi}\sin\left(\frac{\theta}{2}\right)|1\rangle
+            $$
+            </div>
+            <span style="font-size:0.98em;color:#555;">This formula shows how the angles θ (theta) and φ (phi) define the quantum state on the Bloch sphere, which is mapped to Cartesian coordinates for visualization and computation.</span>
+        </div>
+        <p style="font-size:0.95em;color:#888;">Note: "Adam's Quantum Sorting" is a playful name for the recursive divide-and-conquer using quantum approach.</p>
     </div>
     <script>
         // Vectorized computation

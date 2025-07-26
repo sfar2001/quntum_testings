@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantum Photonics Calculator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <style>
+        nav {
+            background: #333;
+            padding: 10px 0 10px 0;
+            margin-bottom: 20px;
+        }
+        nav .nav-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+        }
         .equation-box {
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
             border: 1px solid #ccc;
             padding: 20px;
             margin: 20px;
@@ -12,14 +37,35 @@
         }
         input { margin: 5px; width: 100px; }
         .result { color: #2c3e50; font-weight: bold; }
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100vw;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            nav .nav-inner {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .equation-box {
+                padding: 10px;
+                font-size: 0.95rem;
+            }
+            canvas {
+                min-height: 150px;
+            }
+        }
     </style>
 </head>
 <body>
-    <nav style="background:#333;padding:10px 0 10px 0;margin-bottom:20px;">
-        <div style="max-width:800px;margin:0 auto;display:flex;gap:20px;align-items:center;">
-            <a href="enteglment.html" style="color:white;text-decoration:none;font-weight:bold;">Entanglement</a>
-            <a href="exemple10particuls.html" style="color:white;text-decoration:none;font-weight:bold;">10 Particles</a>
-            <a href="quntum.html" style="color:white;text-decoration:none;font-weight:bold;">Photonics</a>
+    <nav>
+        <div class="nav-inner">
+            <a href="enteglment.html">Entanglement</a>
+            <a href="exemple10particuls.html">10 Particles</a>
+            <a href="quntum.html">Photonics</a>
         </div>
     </nav>
     <h1>Quantum Photonics Equations</h1>

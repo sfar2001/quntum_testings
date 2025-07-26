@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantum Entanglement Animation</title>
     <style>
         body {
@@ -14,6 +15,28 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        nav {
+            background: #333;
+            padding: 10px 0 10px 0;
+            margin-bottom: 20px;
+        }
+        nav .nav-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
         }
         canvas {
             background-color: white;
@@ -53,14 +76,40 @@
             line-height: 20px;
             font-weight: bold;
         }
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            .container {
+                padding: 5px;
+            }
+            nav .nav-inner {
+                flex-direction: column;
+                gap: 10px;
+            }
+            canvas {
+                width: 100% !important;
+                height: auto !important;
+                max-width: 100vw;
+            }
+            .controls {
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+            }
+            .state-info {
+                font-size: 0.95rem;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
-    <nav style="background:#333;padding:10px 0 10px 0;margin-bottom:20px;">
-        <div style="max-width:800px;margin:0 auto;display:flex;gap:20px;align-items:center;">
-            <a href="enteglment.html" style="color:white;text-decoration:none;font-weight:bold;">Entanglement</a>
-            <a href="exemple10particuls.html" style="color:white;text-decoration:none;font-weight:bold;">10 Particles</a>
-            <a href="quntum.html" style="color:white;text-decoration:none;font-weight:bold;">Photonics</a>
+    <nav>
+        <div class="nav-inner">
+            <a href="enteglment.html">Entanglement</a>
+            <a href="exemple10particuls.html">10 Particles</a>
+            <a href="quntum.html">Photonics</a>
         </div>
     </nav>
     <div class="container">

@@ -7,6 +7,8 @@ A collection of interactive, educational web tools for exploring quantum mechani
 ## 🔗 Unified Navigation
 
 All tools are linked by a modern, responsive navigation bar for seamless switching between simulations and calculators.
+check the Project NOW!!! ==> https://inspiring-praline-f198cd.netlify.app/quntum.html
+
 
 ---
 

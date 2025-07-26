@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quantum Photonics Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <style>
+        .equation-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+        }
+        input { margin: 5px; width: 100px; }
+        .result { color: #2c3e50; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <nav style="background:#333;padding:10px 0 10px 0;margin-bottom:20px;">
+        <div style="max-width:800px;margin:0 auto;display:flex;gap:20px;align-items:center;">
+            <a href="enteglment.html" style="color:white;text-decoration:none;font-weight:bold;">Entanglement</a>
+            <a href="exemple10particuls.html" style="color:white;text-decoration:none;font-weight:bold;">10 Particles</a>
+            <a href="quntum.html" style="color:white;text-decoration:none;font-weight:bold;">Photonics</a>
+        </div>
+    </nav>
+    <h1>Quantum Photonics Equations</h1>
+
+    <!-- Planck's Law -->
+    <div class="equation-box">
+        <h2>Planck's Energy Equation</h2>
+        <div>
+            \[ E = h \cdot f \]
+        </div>
+        Frequency (Hz): <input type="number" id="frequency" value="5e14"><br>
+        <button onclick="calculatePlanck()">Calculate Energy</button>
+        <div class="result" id="planckResult"></div>
+    </div>
+
+    <!-- Einstein's Photoelectric Effect -->
+    <div class="equation-box">
+        <h2>Einstein's Photon Energy</h2>
+        <div>
+            \[ E = h \cdot \nu \]
+        </div>
+        Wavelength (nm): <input type="number" id="wavelength" value="500"><br>
+        <button onclick="calculateEinstein()">Calculate Photon Energy</button>
+        <div class="result" id="einsteinResult"></div>
+    </div>
+
+    <!-- Schrödinger Equation (Simplified) -->
+<div class="equation-box">
+    <h2>Schrödinger Wave Equation</h2>
+    <div>
+        \[ \psi(x) = A \cdot e^{-x^2/(2\sigma^2)} \]
+        \[ |\psi|^2 = A^2 \cdot e^{-x^2/\sigma^2} \]
+    </div>
+    Position (nm): <input type="number" id="position" value="0"><br>
+    Width Parameter σ (nm): <input type="number" id="sigma" value="1"><br>
+    Amplitude A: <input type="number" id="amplitude" value="1" step="0.1"><br>
+    <button onclick="calculateSchrodinger()">Calculate Probability Density</button>
+    <div class="result" id="schrodingerResult"></div>
+</div>
+
+<script>
+function calculateSchrodinger() {
+    const x = parseFloat(document.getElementById('position').value) * 1e-9; // Convert nm to m
+    const σ = parseFloat(document.getElementById('sigma').value) * 1e-9; // Convert nm to m
+    const A = parseFloat(document.getElementById('amplitude').value);
+    
+    // Gaussian wave packet probability density
+    const probabilityDensity = A ** 2 * Math.exp(-(x ** 2) / (σ ** 2));
+    
+    document.getElementById('schrodingerResult').innerHTML =
+        `Probability Density: ${probabilityDensity.toFixed(3)}`;
+}
+</script>
+
+
+<h1>Time-Dependent Schrödinger Equation</h1>
+
+    <!-- Schrödinger Equation -->
+    <div class="equation-box">
+        <h2>Time-Dependent Schrödinger Equation</h2>
+        <div>
+            \[ i\hbar \frac{\partial}{\partial t} \Psi(x, t) = \hat{H} \Psi(x, t) \]
+        </div>
+        Initial Position (nm): <input type="number" id="initialPosition" value="0"><br>
+        Initial Width (nm): <input type="number" id="initialWidth" value="1"><br>
+        Time Step (fs): <input type="number" id="timeStep" value="0.1"><br>
+        <button onclick="solveSchrodinger()">Solve Schrödinger Equation</button>
+        <div class="result" id="schrodingerResult"></div>
+        <canvas id="wavefunctionCanvas" width="600" height="300"></canvas>
+    </div>
+
+    <script>
+        const hbar = 1.0545718e-34; // Reduced Planck's constant (ħ)
+        const m = 9.10938356e-31;   // Electron mass (kg)
+        const nm = 1e-9;            // Nanometer to meter conversion
+        const fs = 1e-15;           // Femtosecond to second conversion
+
+        const canvas = document.getElementById('wavefunctionCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function solveSchrodinger() {
+            const x0 = parseFloat(document.getElementById('initialPosition').value) * nm; // Initial position
+            const σ = parseFloat(document.getElementById('initialWidth').value) * nm;     // Initial width
+            const dt = parseFloat(document.getElementById('timeStep').value) * fs;       // Time step
+
+            // Initialize wavefunction (Gaussian wave packet)
+            const N = 600; // Number of spatial points
+            const dx = 0.1 * nm; // Spatial step
+            const x = Array.from({ length: N }, (_, i) => (i - N / 2) * dx); // Spatial grid
+            let Ψ = x.map(xi => Math.exp(-((xi - x0) ** 2) / (2 * σ ** 2))); // Initial wavefunction
+
+            // Normalize wavefunction
+            const norm = Math.sqrt(Ψ.reduce((sum, psi) => sum + Math.abs(psi) ** 2, 0) * dx);
+            Ψ = Ψ.map(psi => psi / norm);
+
+            // Time evolution (simplified)
+            const steps = 100; // Number of time steps
+            for (let step = 0; step < steps; step++) {
+                // Update wavefunction (simple free-particle evolution)
+                Ψ = Ψ.map((psi, i) => {
+                    const d2ψdx2 = (Ψ[i + 1] - 2 * psi + Ψ[i - 1]) / (dx ** 2); // Second derivative
+                    return psi + (1 * i * hbar / (2 * m)) * d2ψdx2 * dt; // Time evolution
+                });
+            }
+
+            // Plot wavefunction
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            x.forEach((xi, i) => {
+                const y = canvas.height / 2 - 100 * Math.abs(Ψ[i]) ** 2;
+                ctx.lineTo((xi / (N * dx)) * canvas.width, y);
+            });
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+
+            document.getElementById('schrodingerResult').innerHTML =
+                `Wavefunction evolved over ${steps} time steps.`;
+        }
+    </script>
+</body>
+</html>

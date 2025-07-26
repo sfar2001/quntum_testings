@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quantum Entanglement Animation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            background-color: white;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .state-info {
+            background-color: #e9f7ef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .qubit {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 5px;
+            text-align: center;
+            line-height: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav style="background:#333;padding:10px 0 10px 0;margin-bottom:20px;">
+        <div style="max-width:800px;margin:0 auto;display:flex;gap:20px;align-items:center;">
+            <a href="enteglment.html" style="color:white;text-decoration:none;font-weight:bold;">Entanglement</a>
+            <a href="exemple10particuls.html" style="color:white;text-decoration:none;font-weight:bold;">10 Particles</a>
+            <a href="quntum.html" style="color:white;text-decoration:none;font-weight:bold;">Photonics</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Quantum Entanglement Simulator</h1>
+        
+        <div class="controls">
+            <button id="bellPlus">Create |Φ⁺⟩ (Equal)</button>
+            <button id="bellMinus">Create |Φ⁻⟩ (Equal)</button>
+            <button id="psiPlus">Create |Ψ⁺⟩ (Opposite)</button>
+            <button id="psiMinus">Create |Ψ⁻⟩ (Opposite)</button>
+        </div>
+        
+        <canvas id="quantumCanvas" width="600" height="300"></canvas>
+        
+        <button id="measureA">Measure Qubit A</button>
+        <button id="measureB">Measure Qubit B</button>
+        <button id="reset">Reset</button>
+        
+        <div class="state-info" id="stateInfo">
+            No state prepared yet. Click a button above to create an entangled pair.
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('quantumCanvas');
+        const ctx = canvas.getContext('2d');
+        const stateInfo = document.getElementById('stateInfo');
+        
+        // Quantum state variables
+        let state = null;
+        let qubitA = null;
+        let qubitB = null;
+        let measuredA = false;
+        let measuredB = false;
+        
+        // Bell states
+        const BELL_PLUS = { name: "|Φ⁺⟩", desc: "Qubits will be EQUAL when measured", type: "equal" };
+        const BELL_MINUS = { name: "|Φ⁻⟩", desc: "Qubits will be EQUAL when measured", type: "equal" };
+        const PSI_PLUS = { name: "|Ψ⁺⟩", desc: "Qubits will be OPPOSITE when measured", type: "opposite" };
+        const PSI_MINUS = { name: "|Ψ⁻⟩", desc: "Qubits will be OPPOSITE when measured", type: "opposite" };
+        
+        // Initialize
+        function init() {
+            drawSystem();
+            updateStateInfo();
+        }
+        
+        // Draw the quantum system
+        function drawSystem() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw qubit A
+            ctx.beginPath();
+            ctx.arc(150, 150, 40, 0, Math.PI * 2);
+            ctx.fillStyle = qubitA === 1 ? '#ff6b6b' : (qubitA === 0 ? '#4ecdc4' : '#ddd');
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = 'black';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Qubit A', 150, 220);
+            if (qubitA !== null) {
+                ctx.fillText(qubitA.toString(), 150, 155);
+            }
+            
+            // Draw qubit B
+            ctx.beginPath();
+            ctx.arc(450, 150, 40, 0, Math.PI * 2);
+            ctx.fillStyle = qubitB === 1 ? '#ff6b6b' : (qubitB === 0 ? '#4ecdc4' : '#ddd');
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillText('Qubit B', 450, 220);
+            if (qubitB !== null) {
+                ctx.fillText(qubitB.toString(), 450, 155);
+            }
+            
+            // Draw entanglement connection
+            if (state && !measuredA && !measuredB) {
+                ctx.beginPath();
+                ctx.moveTo(190, 150);
+                ctx.lineTo(410, 150);
+                ctx.strokeStyle = '#9b59b6';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+        
+        // Update the state information display
+        function updateStateInfo() {
+            if (!state) {
+                stateInfo.innerHTML = "No state prepared yet. Click a button above to create an entangled pair.";
+                return;
+            }
+            
+            let info = `<strong>Current State:</strong> ${state.name}<br>${state.desc}<br>`;
+            
+            if (measuredA || measuredB) {
+                info += `<br>Measurement results:<br>`;
+                info += `Qubit A: ${qubitA !== null ? qubitA : '?'}<br>`;
+                info += `Qubit B: ${qubitB !== null ? qubitB : '?'}`;
+                
+                if (state.type === "equal" && qubitA !== null && qubitB !== null) {
+                    info += `<br><br>The qubits are <strong>equal</strong> as predicted for ${state.name}`;
+                } else if (state.type === "opposite" && qubitA !== null && qubitB !== null) {
+                    info += `<br><br>The qubits are <strong>opposite</strong> as predicted for ${state.name}`;
+                }
+            } else {
+                info += `<br>Qubits are currently in superposition. Measure one to see the entanglement effect.`;
+            }
+            
+            stateInfo.innerHTML = info;
+        }
+        
+        // Create an entangled state
+        function createEntangledState(bellState) {
+            state = bellState;
+            qubitA = null;
+            qubitB = null;
+            measuredA = false;
+            measuredB = false;
+            drawSystem();
+            updateStateInfo();
+        }
+        
+        // Measure a qubit
+        function measureQubit(qubit) {
+            if (!state || (qubit === 'A' && measuredA) || (qubit === 'B' && measuredB)) return;
+            
+            // Random measurement result (0 or 1)
+            const result = Math.random() < 0.5 ? 0 : 1;
+            
+            if (qubit === 'A') {
+                qubitA = result;
+                measuredA = true;
+                // Entanglement effect - determine the other qubit's state
+                if (state.type === "equal") {
+                    qubitB = result;
+                } else {
+                    qubitB = result === 0 ? 1 : 0;
+                }
+            } else {
+                qubitB = result;
+                measuredB = true;
+                // Entanglement effect - determine the other qubit's state
+                if (state.type === "equal") {
+                    qubitA = result;
+                } else {
+                    qubitA = result === 0 ? 1 : 0;
+                }
+            }
+            
+            drawSystem();
+            updateStateInfo();
+        }
+        
+        // Reset the system
+        function resetSystem() {
+            state = null;
+            qubitA = null;
+            qubitB = null;
+            measuredA = false;
+            measuredB = false;
+            drawSystem();
+            updateStateInfo();
+        }
+        
+        // Event listeners
+        document.getElementById('bellPlus').addEventListener('click', () => createEntangledState(BELL_PLUS));
+        document.getElementById('bellMinus').addEventListener('click', () => createEntangledState(BELL_MINUS));
+        document.getElementById('psiPlus').addEventListener('click', () => createEntangledState(PSI_PLUS));
+        document.getElementById('psiMinus').addEventListener('click', () => createEntangledState(PSI_MINUS));
+        document.getElementById('measureA').addEventListener('click', () => measureQubit('A'));
+        document.getElementById('measureB').addEventListener('click', () => measureQubit('B'));
+        document.getElementById('reset').addEventListener('click', resetSystem);
+        
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

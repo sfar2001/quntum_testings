@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>10 Particles in a 3D Box</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: inline-block; width: 150px; }
+        .input-group input { width: 100px; }
+        #graph { width: 800px; height: 600px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <nav style="background:#333;padding:10px 0 10px 0;margin-bottom:20px;">
+        <div style="max-width:800px;margin:0 auto;display:flex;gap:20px;align-items:center;">
+            <a href="enteglment.html" style="color:white;text-decoration:none;font-weight:bold;">Entanglement</a>
+            <a href="exemple10particuls.html" style="color:white;text-decoration:none;font-weight:bold;">10 Particles</a>
+            <a href="quntum.html" style="color:white;text-decoration:none;font-weight:bold;">Photonics</a>
+        </div>
+    </nav>
+    <h1>10 Particles in a 3D Box</h1>
+
+    <!-- Inputs -->
+    <div class="input-group">
+        <label for="boxLength">Box Length (L):</label>
+        <input type="number" id="boxLength" value="10">
+    </div>
+    <div class="input-group">
+        <label for="particleMass">Particle Mass (m):</label>
+        <input type="number" id="particleMass" value="1">
+    </div>
+    <div class="input-group">
+        <label for="time">Time (t):</label>
+        <input type="number" id="time" value="0">
+    </div>
+    <button onclick="updateGraph()">Update Graph</button>
+
+    <!-- Graph -->
+    <div id="graph"></div>
+
+    <script>
+        const hbar = 1.0545718e-34; // Reduced Planck's constant
+        const nm = 1e-9;            // Nanometer to meter conversion
+
+        // Initialize particle quantum numbers (for simplicity, use the first 10 states)
+        const quantumNumbers = [
+            [1, 1, 1], [1, 1, 2], [1, 2, 1], [2, 1, 1], [1, 2, 2],
+            [2, 1, 2], [2, 2, 1], [1, 1, 3], [1, 3, 1], [3, 1, 1]
+        ];
+
+        // Function to calculate the wavefunction for a single particle
+        function wavefunction(x, y, z, nx, ny, nz, L, t, m) {
+            const E = (hbar ** 2 * Math.PI ** 2) / (2 * m * L ** 2) * (nx ** 2 + ny ** 2 + nz ** 2);
+            const psi = Math.sqrt(8 / L ** 3) *
+                       Math.sin(nx * Math.PI * x / L) *
+                       Math.sin(ny * Math.PI * y / L) *
+                       Math.sin(nz * Math.PI * z / L) *
+                       Math.exp(-1 * Math.E * E * t / hbar); // Corrected exponential term
+            return psi;
+        }
+
+        // Function to calculate the probability density for 10 particles
+        function probabilityDensity(x, y, z, L, t, m) {
+            let density = 0;
+            for (let i = 0; i < 10; i++) {
+                const [nx, ny, nz] = quantumNumbers[i];
+                const psi = wavefunction(x, y, z, nx, ny, nz, L, t, m);
+                density += Math.abs(psi) ** 2; // Sum of probability densities
+            }
+            return density;
+        }
+
+        // Function to update the 3D graph
+        function updateGraph() {
+            const L = parseFloat(document.getElementById('boxLength').value); // Box length
+            const m = parseFloat(document.getElementById('particleMass').value); // Particle mass
+            const t = parseFloat(document.getElementById('time').value); // Time
+
+            // Generate data for the 3D graph
+            const N = 20; // Number of grid points
+            const x = [], y = [], z = [], density = [];
+            for (let i = 0; i < N; i++) {
+                for (let j = 0; j < N; j++) {
+                    for (let k = 0; k < N; k++) {
+                        const xi = (i / N) * L;
+                        const yi = (j / N) * L;
+                        const zi = (k / N) * L;
+                        x.push(xi);
+                        y.push(yi);
+                        z.push(zi);
+                        density.push(probabilityDensity(xi, yi, zi, L, t, m));
+                    }
+                }
+            }
+
+            // Create the 3D scatter plot
+            const trace = {
+                x: x,
+                y: y,
+                z: z,
+                mode: 'markers',
+                marker: {
+                    size: 5,
+                    color: density,
+                    colorscale: 'Viridis',
+                    opacity: 0.8
+                },
+                type: 'scatter3d'
+            };
+
+            const layout = {
+                title: 'Probability Density of 10 Particles in a 3D Box',
+                scene: {
+                    xaxis: { title: 'X (nm)' },
+                    yaxis: { title: 'Y (nm)' },
+                    zaxis: { title: 'Z (nm)' }
+                },
+                margin: { l: 0, r: 0, b: 0, t: 50 }
+            };
+
+            Plotly.newPlot('graph', [trace], layout);
+        }
+
+        // Initialize the graph on page load
+        updateGraph();
+    </script>
+</body>
+</html>

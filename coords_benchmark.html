@@ -45,8 +45,9 @@
         <h2>Algorithm Descriptions</h2>
         <ul>
             <li><b>Vectorized:</b> Uses array operations to compute all coordinates in a single pass.</li>
-            <li><b>Divide and Conquer:</b> Recursively splits the input arrays, computes results for each half, and merges them.</li>
+            <li><b>Adam's Quantum Sorting:</b> Recursively splits the input arrays, computes results for each half, and merges them. (Inspired by divide-and-conquer, named for demonstration.)</li>
         </ul>
+        <p style="font-size:0.95em;color:#888;">Note: "Adam's Quantum Sorting" is a playful name for the recursive divide-and-conquer approach, as requested.</p>
     </div>
     <script>
         // Vectorized computation
@@ -64,8 +65,8 @@
             return Array.from({length: N}, (_, i) => [x[i], y[i], z[i]]);
         }
 
-        // Divide and conquer computation
-        function computeStateCoordinatesDivideAndConquer(theta, phi) {
+        // Adam's Quantum Sorting (Divide and conquer computation)
+        function adamsQuantumSorting(theta, phi) {
             function helper(start, end) {
                 if (end - start <= 10000) { // base case: small chunk
                     const res = [];
@@ -107,9 +108,9 @@
             t1 = performance.now();
             const timeVec = t1 - t0;
 
-            // Divide and conquer
+            // Adam's Quantum Sorting
             t0 = performance.now();
-            resultsDC = computeStateCoordinatesDivideAndConquer(theta, phi);
+            resultsDC = adamsQuantumSorting(theta, phi);
             t1 = performance.now();
             const timeDC = t1 - t0;
 
@@ -128,7 +129,7 @@
             document.getElementById('results').innerHTML =
                 `<b>Processed ${numInputs.toLocaleString()} inputs</b><br>` +
                 `Vectorized: <b>${timeVec.toFixed(2)} ms</b><br>` +
-                `Divide & Conquer: <b>${timeDC.toFixed(2)} ms</b><br>` +
+                `Adam's Quantum Sorting: <b>${timeDC.toFixed(2)} ms</b><br>` +
                 `Results match: <b style="color:${correct ? 'green' : 'red'}">${correct ? 'Yes' : 'No'}</b>`;
         }
     </script>

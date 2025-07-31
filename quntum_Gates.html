@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quantum Gate Simulator</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        nav {
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            padding: 14px 0;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        nav .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 50px;
+        }
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #555;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .panel {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e8eef7;
+        }
+        .panel-title {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            color: #4a00e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .panel-title i {
+            font-size: 1.8rem;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(142, 45, 226, 0.4);
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        .btn.active {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.4);
+        }
+        select, input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ddd;
+            color: #333;
+            padding: 12px 18px;
+            border-radius: 50px;
+            flex: 1;
+            min-width: 150px;
+            font-size: 1rem;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #8e2de2;
+        }
+        .gates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .gate-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e8eef7;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .gate-card:hover {
+            transform: translateY(-5px);
+            border-color: #8e2de2;
+            box-shadow: 0 8px 20px rgba(142, 45, 226, 0.15);
+        }
+        .gate-card.active {
+            background: rgba(142, 45, 226, 0.05);
+            border-color: #4a00e0;
+            transform: translateY(-5px);
+        }
+        .gate-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            color: #4a00e0;
+            font-weight: bold;
+        }
+        .gate-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        .gate-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .circuit {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-top: 20px;
+            padding: 20px 0;
+            background: #fafbff;
+            border-radius: 12px;
+        }
+        .qubit {
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 10px 0;
+        }
+        .qubit::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        .qubit-label {
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 25px;
+            z-index: 2;
+            position: relative;
+            color: white;
+            font-size: 1.2rem;
+        }
+        .gate-visual {
+            width: 65px;
+            height: 65px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 15px;
+            z-index: 2;
+            position: relative;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border: 2px solid #4a00e0;
+            box-shadow: 0 4px 12px rgba(74, 0, 224, 0.15);
+        }
+        .control-point {
+            width: 28px;
+            height: 28px;
+            background: #4a00e0;
+            border-radius: 50%;
+            z-index: 2;
+            position: relative;
+            margin: 0 25px;
+            box-shadow: 0 0 0 6px rgba(74, 0, 224, 0.15);
+        }
+        .state-display {
+            margin-top: 30px;
+        }
+        .state-vector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+        .state-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            text-align: center;
+            border: 1px solid #e8eef7;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .state-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(142, 45, 226, 0.1);
+        }
+        .state-label {
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #4a00e0;
+            font-size: 1.2rem;
+        }
+        .state-value {
+            font-size: 1.3rem;
+            font-family: monospace;
+            font-weight: bold;
+            color: #333;
+        }
+        .probability-bar {
+            height: 12px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a00e0, #8e2de2);
+            border-radius: 6px;
+        }
+        .complex-number {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 8px;
+            font-family: monospace;
+        }
+        .instructions {
+            margin-top: 40px;
+            padding: 25px;
+            background: white;
+            border-radius: 16px;
+            border-left: 5px solid #4a00e0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+        .instructions h3 {
+            margin-bottom: 18px;
+            color: #4a00e0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .instructions ol {
+            padding-left: 22px;
+        }
+        .instructions li {
+            margin: 16px 0;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            color: #555;
+        }
+        .instructions li strong {
+            color: #4a00e0;
+        }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            color: #666;
+            font-size: 1rem;
+            border-top: 1px solid #eee;
+        }
+        @media (max-width: 700px) {
+            .content-grid {
+                gap: 20px;
+            }
+            .panel {
+                padding: 20px;
+            }
+            .gates-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            .controls {
+                gap: 12px;
+            }
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+            nav .nav-inner {
+                gap: 12px;
+                padding: 0 10px;
+            }
+            nav a {
+                font-size: 0.95rem;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="enteglment.html">Entanglement</a>
+            <a href="exemple10particuls.html">10 Particles</a>
+            <a href="quntum.html">Photonics</a>
+            <a href="coords_benchmark.html">Coords Benchmark</a>
+            <a href="bloch_sphere.html">Bloch Sphere</a>
+        </div>
+    </nav>
+    
+    <div class="main-container">
+        <div class="header">
+            <h1>Quantum Gate Simulator</h1>
+            <p>Visualize quantum gates and their effects on 1, 2, and 3 qubit systems. See the quantum state evolution in real-time.</p>
+        </div>
+        
+        <div class="content-grid">
+            <div class="panel">
+                <h2 class="panel-title">⚛️ Quantum Gates</h2>
+                
+                <div class="controls">
+                    <button class="btn active" id="btn-1qubit">
+                        <span>1</span> Qubit
+                    </button>
+                    <button class="btn" id="btn-2qubit">
+                        <span>2</span> Qubits
+                    </button>
+                    <button class="btn" id="btn-3qubit">
+                        <span>3</span> Qubits
+                    </button>
+                    
+                    <select id="gate-type">
+                        <option value="single">Single Qubit Gates</option>
+                        <option value="multi">Multi-Qubit Gates</option>
+                    </select>
+                </div>
+                
+                <div class="gates-grid">
+                    <div class="gate-card active" data-gate="H">
+                        <div class="gate-icon">H</div>
+                        <div class="gate-name">Hadamard</div>
+                        <div class="gate-desc">Creates superposition</div>
+                    </div>
+                    
+                    <div class="gate-card" data-gate="X">
+                        <div class="gate-icon">X</div>
+                        <div class="gate-name">Pauli-X</div>
+                        <div class="gate-desc">Bit flip (NOT)</div>
+                    </div>
+                    
+                    <div class="gate-card" data-gate="Y">
+                        <div class="gate-icon">Y</div>
+                        <div class="gate-name">Pauli-Y</div>
+                        <div class="gate-desc">Y rotation</div>
+                    </div>
+                    
+                    <div class="gate-card" data-gate="Z">
+                        <div class="gate-icon">Z</div>
+                        <div class="gate-name">Pauli-Z</div>
+                        <div class="gate-desc">Phase flip</div>
+                    </div>
+                    
+                    <div class="gate-card" data-gate="S">
+                        <div class="gate-icon">S</div>
+                        <div class="gate-name">Phase Gate</div>
+                        <div class="gate-desc">√Z gate</div>
+                    </div>
+                    
+                    <div class="gate-card" data-gate="T">
+                        <div class="gate-icon">T</div>
+                        <div class="gate-name">T Gate</div>
+                        <div class="gate-desc">π/8 gate</div>
+                    </div>
+                    
+                    <div class="gate-card" data-gate="CNOT">
+                        <div class="gate-icon">CX</div>
+                        <div class="gate-name">CNOT</div>
+                        <div class="gate-desc">Controlled NOT</div>
+                    </div>
+                    
+                    <div class="gate-card" data-gate="SWAP">
+                        <div class="gate-icon">SW</div>
+                        <div class="gate-name">SWAP</div>
+                        <div class="gate-desc">Exchange qubits</div>
+                    </div>
+                </div>
+                
+                <div class="controls" style="margin-top: 25px;">
+                    <input type="range" id="angle" min="0" max="360" value="45" style="flex: 3;">
+                    <div style="min-width: 70px; text-align: center; flex: 1; font-weight: 600; color: #4a00e0;">
+                        θ: <span id="angle-value">45°</span>
+                    </div>
+                    <button class="btn" id="btn-apply">
+                        <span>↻</span> Apply Gate
+                    </button>
+                    <button class="btn" id="btn-reset">
+                        <span>⟲</span> Reset
+                    </button>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2 class="panel-title">🌀 Quantum Circuit</h2>
+                
+                <div class="circuit">
+                    <div class="qubit">
+                        <div class="qubit-label">0</div>
+                        <div class="gate-visual">H</div>
+                    </div>
+                    
+                    <div class="qubit">
+                        <div class="qubit-label">1</div>
+                        <div class="control-point"></div>
+                        <div class="gate-visual">X</div>
+                    </div>
+                    
+                    <div class="qubit">
+                        <div class="qubit-label">2</div>
+                    </div>
+                </div>
+                
+                <div class="state-display">
+                    <h2 class="panel-title">📊 Quantum State</h2>
+                    
+                    <div class="state-vector" id="state-vector-container">
+                        <!-- State cards will be generated here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📘 How to Use This Simulator</h3>
+            <ol>
+                <li><strong>Select the number of qubits</strong> you want to work with (1, 2, or 3)</li>
+                <li><strong>Choose a quantum gate</strong> from the available options</li>
+                <li><strong>Adjust the rotation angle</strong> for gates that support parameterization</li>
+                <li><strong>Click "Apply Gate"</strong> to add it to the circuit and see its effect</li>
+                <li>Observe how the quantum state changes in the state vector display</li>
+                <li>The <strong>probability bars</strong> show measurement likelihood for each state</li>
+                <li>Use the <strong>reset button</strong> to return to the initial |0⟩ state</li>
+                <li><strong>Multi-qubit gates</strong> (CNOT, SWAP) require selecting 2 or 3 qubits first</li>
+            </ol>
+        </div>
+        
+        <footer>
+            <p>Quantum Gate Simulator | Created with HTML, CSS, and JavaScript | Visualization of quantum computing concepts</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Quantum state representation
+        let quantumState = {
+            qubits: 1,
+            stateVector: [
+                { label: "|0⟩", magnitude: 1.0, phase: 0, probability: 1.0 }
+            ]
+        };
+        
+        // DOM Elements
+        const qubitButtons = document.querySelectorAll('.btn[id^="btn-"]');
+        const gateCards = document.querySelectorAll('.gate-card');
+        const angleSlider = document.getElementById('angle');
+        const angleValue = document.getElementById('angle-value');
+        const applyButton = document.getElementById('btn-apply');
+        const resetButton = document.getElementById('btn-reset');
+        const gateTypeSelect = document.getElementById('gate-type');
+        const stateVectorContainer = document.getElementById('state-vector-container');
+        
+        // Update angle display
+        angleSlider.addEventListener('input', () => {
+            angleValue.textContent = `${angleSlider.value}°`;
+        });
+        
+        // Qubit selection
+        qubitButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                qubitButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                quantumState.qubits = parseInt(btn.textContent.match(/\d/)[0]);
+                resetState();
+                updateCircuitVisualization();
+                generateStateVector();
+            });
+        });
+        
+        // Gate selection
+        gateCards.forEach(card => {
+            card.addEventListener('click', () => {
+                gateCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+            });
+        });
+        
+        // Gate type selection
+        gateTypeSelect.addEventListener('change', () => {
+            const isMulti = gateTypeSelect.value === 'multi';
+            
+            // Toggle visibility based on gate type
+            gateCards.forEach(card => {
+                const gate = card.dataset.gate;
+                if (isMulti) {
+                    card.style.display = (gate === 'CNOT' || gate === 'SWAP') ? 
+                        'block' : 'none';
+                } else {
+                    card.style.display = (gate !== 'CNOT' && gate !== 'SWAP') ? 
+                        'block' : 'none';
+                }
+            });
+        });
+        
+        // Apply gate
+        applyButton.addEventListener('click', () => {
+            const angle = parseInt(angleSlider.value);
+            const selectedGate = document.querySelector('.gate-card.active').dataset.gate;
+            applyGate(selectedGate, angle);
+            updateCircuitVisualization();
+            updateStateVector();
+        });
+        
+        // Reset
+        resetButton.addEventListener('click', () => {
+            resetState();
+            resetCircuit();
+            updateStateVector();
+        });
+        
+        // Apply gate to quantum state
+        function applyGate(gate, angle) {
+            // In a real implementation, this would update the quantum state
+            // For this demo, we'll simulate state changes
+            const radians = angle * Math.PI / 180;
+            
+            // Simulate different gate effects
+            quantumState.stateVector.forEach(state => {
+                switch(gate) {
+                    case 'H':
+                        // Hadamard gate creates superposition
+                        state.magnitude = Math.sqrt(0.5);
+                        state.probability = 0.5;
+                        break;
+                    case 'X':
+                        // Bit flip
+                        if (state.label.includes('0')) {
+                            state.label = state.label.replace('0', '1');
+                        } else if (state.label.includes('1')) {
+                            state.label = state.label.replace('1', '0');
+                        }
+                        break;
+                    case 'Y':
+                        // Y rotation
+                        state.phase += radians;
+                        break;
+                    case 'Z':
+                        // Phase flip
+                        if (state.label.endsWith('1⟩')) {
+                            state.phase += Math.PI;
+                        }
+                        break;
+                    case 'CNOT':
+                        // Controlled NOT - flip target if control is 1
+                        if (quantumState.qubits > 1) {
+                            if (state.label.includes('1')) {
+                                state.label = state.label.replace('0', '1').replace('1', '0');
+                            }
+                        }
+                        break;
+                    default:
+                        // For other gates, add some phase
+                        state.phase += radians / 4;
+                        state.probability = Math.abs(Math.cos(state.phase)) * 0.8 + 0.2;
+                }
+            });
+            
+            // Normalize probabilities
+            normalizeProbabilities();
+        }
+        
+        // Reset quantum state to |0...0>
+        function resetState() {
+            quantumState.stateVector = [];
+            const numStates = Math.pow(2, quantumState.qubits);
+            
+            for (let i = 0; i < numStates; i++) {
+                const binary = i.toString(2).padStart(quantumState.qubits, '0');
+                const label = `|${binary}⟩`;
+                const isZeroState = i === 0;
+                
+                quantumState.stateVector.push({
+                    label: label,
+                    magnitude: isZeroState ? 1.0 : 0.0,
+                    phase: 0,
+                    probability: isZeroState ? 1.0 : 0.0
+                });
+            }
+        }
+        
+        // Normalize state probabilities
+        function normalizeProbabilities() {
+            let total = 0;
+            quantumState.stateVector.forEach(state => {
+                total += state.probability;
+            });
+            
+            if (total > 0) {
+                quantumState.stateVector.forEach(state => {
+                    state.probability /= total;
+                    state.magnitude = Math.sqrt(state.probability);
+                });
+            }
+        }
+        
+        // Generate state vector display
+        function generateStateVector() {
+            stateVectorContainer.innerHTML = '';
+            
+            quantumState.stateVector.forEach(state => {
+                const card = document.createElement('div');
+                card.className = 'state-card';
+                
+                // Calculate complex number representation
+                const real = (state.magnitude * Math.cos(state.phase)).toFixed(3);
+                const imag = (state.magnitude * Math.sin(state.phase)).toFixed(3);
+                const complex = `${real} + ${imag}i`;
+                
+                card.innerHTML = `
+                    <div class="state-label">${state.label}</div>
+                    <div class="state-value">${state.probability.toFixed(3)}</div>
+                    <div class="complex-number">${complex}</div>
+                    <div class="probability-bar">
+                        <div class="probability-fill" style="width: ${state.probability * 100}%"></div>
+                    </div>
+                `;
+                
+                stateVectorContainer.appendChild(card);
+            });
+        }
+        
+        // Update state vector display
+        function updateStateVector() {
+            generateStateVector();
+        }
+        
+        // Update circuit visualization
+        function updateCircuitVisualization() {
+            const circuit = document.querySelector('.circuit');
+            circuit.innerHTML = '';
+            
+            for (let i = 0; i < quantumState.qubits; i++) {
+                const qubit = document.createElement('div');
+                qubit.className = 'qubit';
+                
+                const label = document.createElement('div');
+                label.className = 'qubit-label';
+                label.textContent = i;
+                
+                qubit.appendChild(label);
+                
+                // Add some gates for visualization
+                if (i === 0) {
+                    const gate = document.createElement('div');
+                    gate.className = 'gate-visual';
+                    gate.textContent = 'H';
+                    qubit.appendChild(gate);
+                }
+                
+                if (quantumState.qubits > 1 && i === 1) {
+                    const control = document.createElement('div');
+                    control.className = 'control-point';
+                    qubit.appendChild(control);
+                    
+                    const gate = document.createElement('div');
+                    gate.className = 'gate-visual';
+                    gate.textContent = 'X';
+                    qubit.appendChild(gate);
+                }
+                
+                circuit.appendChild(qubit);
+            }
+        }
+        
+        // Reset circuit visualization
+        function resetCircuit() {
+            updateCircuitVisualization();
+        }
+        
+        // Initialize the simulator
+        resetState();
+        updateCircuitVisualization();
+        generateStateVector();
+    </script>
+</body>
+</html>

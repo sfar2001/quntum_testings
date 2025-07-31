@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Gates Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        nav {
+            background: #333;
+            padding: 10px 0 10px 0;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        nav .nav-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: color 0.2s;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        nav a:hover {
+            background: #444;
+        }
+        nav a.active {
+            background: #555;
+            color: #ffd700;
+        }
+        .main-container {
+            max-width: 1000px;
+            margin: 40px auto 0 auto;
+            padding: 24px 20px 40px 20px;
+            background: none;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .explanation {
+            max-width: 1000px;
+            margin: 0 auto 30px auto;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 24px 20px 20px 20px;
+            border-radius: 12px;
+            text-align: left;
+            line-height: 1.6;
+        }
+        .gates-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .gate-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        .gate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .gate-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-top: 0;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .gate-matrix {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+        .gate-circuit {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2rem;
+            font-family: monospace;
+        }
+        .state-transformation {
+            background: #e8f4f8;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            margin-top: 15px;
+            border-left: 4px solid #3498db;
+        }
+        .qubit-count-selector {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .qubit-button {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+            min-width: 120px;
+        }
+        .qubit-button:hover {
+            background: #2980b9;
+        }
+        .qubit-button.active {
+            background: #1a5276;
+        }
+        .gate-description {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.5;
+        }
+        .matrix-row {
+            display: flex;
+            justify-content: center;
+        }
+        .matrix-cell {
+            padding: 5px 10px;
+            min-width: 60px;
+            text-align: center;
+        }
+        .highlight {
+            background-color: #fffacd;
+            font-weight: bold;
+        }
+        .math-symbol {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        .complex-number {
+            font-family: 'Times New Roman', serif;
+        }
+        @media (max-width: 700px) {
+            .main-container {
+                padding: 8px 10px 24px 10px;
+            }
+            .gates-container {
+                grid-template-columns: 1fr;
+            }
+            .explanation {
+                padding: 15px;
+                font-size: 0.95rem;
+            }
+            .qubit-count-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+            .qubit-button {
+                width: 100%;
+                max-width: 200px;
+            }
+            .gate-circuit {
+                font-size: 1.5rem;
+            }
+            .gate-matrix {
+                font-size: 0.9rem;
+            }
+            .matrix-cell {
+                min-width: 40px;
+                padding: 3px 6px;
+            }
+        }
+        @media (max-width: 480px) {
+           
+            nav a {
+                font-size: 0.9rem;
+                padding: 6px 8px;
+            }
+            .gate-card {
+                padding: 15px;
+            }
+            .gate-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="enteglment.html">Entanglement</a>
+            <a href="exemple10particuls.html">10 Particles</a>
+            <a href="quntum.html">Photonics</a>
+            <a href="coords_benchmark.html">Coords Benchmark</a>
+            <a href="bloch_sphere.html">Bloch Sphere</a>
+            <a href="quntumGates.html">Gates</a>
+        </div>
+    </nav>
+    
+    <div class="main-container">
+        <h1>Quantum Gates Visualization</h1>
+        
+        <div class="explanation">
+            <p>
+                Quantum gates are the building blocks of quantum circuits, analogous to classical logic gates in conventional digital circuits. Unlike classical gates, quantum gates are reversible and operate on qubits through unitary transformations. This page visualizes common quantum gates for 1, 2, and 3 qubits, showing their matrix representations, circuit symbols, and effects on quantum states.
+            </p>
+            <p>
+                <strong>Key concepts:</strong>
+            </p>
+            <ul>
+                <li><strong>Unitary operation:</strong> Quantum gates must be reversible and preserve the norm of the state vector</li>
+                <li><strong>Qubit states:</strong> Represented as |0⟩ and |1⟩, with superposition states α|0⟩ + β|1⟩</li>
+                <li><strong>Tensor product:</strong> Multi-qubit gates operate on composite states using tensor products</li>
+            </ul>
+        </div>
+        
+        <div class="qubit-count-selector" role="tablist" aria-label="Select number of qubits">
+            <button class="qubit-button active" data-qubits="1" role="tab" aria-selected="true">1 Qubit Gates</button>
+            <button class="qubit-button" data-qubits="2" role="tab" aria-selected="false">2 Qubit Gates</button>
+            <button class="qubit-button" data-qubits="3" role="tab" aria-selected="false">3 Qubit Gates</button>
+        </div>
+        
+        <!-- 1-Qubit Gates -->
+        <div id="one-qubit-gates" role="tabpanel" aria-label="1-qubit gates">
+            <h2>1-Qubit Quantum Gates</h2>
+            
+            <div class="gates-container">
+                <!-- Pauli X Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Pauli-X (NOT Gate)</h3>
+                    <div class="gate-description">
+                        Flips the state: |0⟩ → |1⟩, |1⟩ → |0⟩. Equivalent to a classical NOT gate.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Pauli-X gate">
+                        ―|X|―
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        X|0⟩ = |1⟩<br>
+                        X|1⟩ = |0⟩<br>
+                        X(α|0⟩ + β|1⟩) = β|0⟩ + α|1⟩
+                    </div>
+                </div>
+                
+                <!-- Hadamard Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Hadamard (H)</h3>
+                    <div class="gate-description">
+                        Creates superposition: |0⟩ → (|0⟩ + |1⟩)/√2, |1⟩ → (|0⟩ - |1⟩)/√2.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Hadamard gate">
+                        ―|H|―
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1/√2</div>
+                            <div class="matrix-cell">1/√2</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1/√2</div>
+                            <div class="matrix-cell">-1/√2</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        H|0⟩ = |+⟩ = (|0⟩ + |1⟩)/√2<br>
+                        H|1⟩ = |-⟩ = (|0⟩ - |1⟩)/√2
+                    </div>
+                </div>
+                
+                <!-- Pauli Z Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Pauli-Z (Phase Flip)</h3>
+                    <div class="gate-description">
+                        Flips the phase: |0⟩ → |0⟩, |1⟩ → -|1⟩. Leaves |0⟩ unchanged, flips sign of |1⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Pauli-Z gate">
+                        ―|Z|―
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">-1</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        Z|0⟩ = |0⟩<br>
+                        Z|1⟩ = -|1⟩<br>
+                        Z(α|0⟩ + β|1⟩) = α|0⟩ - β|1⟩
+                    </div>
+                </div>
+                
+                <!-- Phase Gate (S) -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Phase Gate (S)</h3>
+                    <div class="gate-description">
+                        Applies a phase shift of π/2: |0⟩ → |0⟩, |1⟩ → <span class="complex-number">i</span>|1⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Phase gate">
+                        ―|S|―
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell"><span class="complex-number">i</span></div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        S|0⟩ = |0⟩<br>
+                        S|1⟩ = <span class="complex-number">i</span>|1⟩<br>
+                        S(α|0⟩ + β|1⟩) = α|0⟩ + <span class="complex-number">i</span>β|1⟩
+                    </div>
+                </div>
+                
+                <!-- T Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">T Gate (π/8 Gate)</h3>
+                    <div class="gate-description">
+                        Applies a phase shift of π/4: |0⟩ → |0⟩, |1⟩ → <span class="complex-number">e<sup>iπ/4</sup></span>|1⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for T gate">
+                        ―|T|―
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell"><span class="complex-number">e<sup>iπ/4</sup></span></div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        T|0⟩ = |0⟩<br>
+                        T|1⟩ = <span class="complex-number">e<sup>iπ/4</sup></span>|1⟩
+                    </div>
+                </div>
+                
+                <!-- Identity Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Identity (I)</h3>
+                    <div class="gate-description">
+                        Leaves the state unchanged: |ψ⟩ → |ψ⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Identity gate">
+                        ―|I|―
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        I|0⟩ = |0⟩<br>
+                        I|1⟩ = |1⟩<br>
+                        I(α|0⟩ + β|1⟩) = α|0⟩ + β|1⟩
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2-Qubit Gates (initially hidden) -->
+        <div id="two-qubit-gates" style="display: none;" role="tabpanel" aria-label="2-qubit gates">
+            <h2>2-Qubit Quantum Gates</h2>
+            
+            <div class="gates-container">
+                <!-- CNOT Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">CNOT (Controlled-X)</h3>
+                    <div class="gate-description">
+                        Controlled-NOT gate: flips target qubit if control is |1⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for CNOT gate">
+                        •―――<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;⊕
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        CNOT|00⟩ = |00⟩<br>
+                        CNOT|01⟩ = |01⟩<br>
+                        CNOT|10⟩ = |11⟩<br>
+                        CNOT|11⟩ = |10⟩
+                    </div>
+                </div>
+                
+                <!-- SWAP Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">SWAP</h3>
+                    <div class="gate-description">
+                        Swaps the states of two qubits: |ψ⟩ ⊗ |φ⟩ → |φ⟩ ⊗ |ψ⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for SWAP gate">
+                        ―×―<br>
+                        ―×―
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        SWAP|00⟩ = |00⟩<br>
+                        SWAP|01⟩ = |10⟩<br>
+                        SWAP|10⟩ = |01⟩<br>
+                        SWAP|11⟩ = |11⟩
+                    </div>
+                </div>
+                
+                <!-- Controlled-Z Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Controlled-Z (CZ)</h3>
+                    <div class="gate-description">
+                        Applies Z gate to target if control is |1⟩. Symmetric in control and target.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Controlled-Z gate">
+                        •―――<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;•
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">-1</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        CZ|00⟩ = |00⟩<br>
+                        CZ|01⟩ = |01⟩<br>
+                        CZ|10⟩ = |10⟩<br>
+                        CZ|11⟩ = -|11⟩
+                    </div>
+                </div>
+                
+                <!-- Controlled Phase Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Controlled Phase (S)</h3>
+                    <div class="gate-description">
+                        Applies S gate to target if control is |1⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Controlled Phase gate">
+                        •―――<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;S
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell"><span class="complex-number">i</span></div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        CS|00⟩ = |00⟩<br>
+                        CS|01⟩ = |01⟩<br>
+                        CS|10⟩ = |10⟩<br>
+                        CS|11⟩ = <span class="complex-number">i</span>|11⟩
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3-Qubit Gates (initially hidden) -->
+        <div id="three-qubit-gates" style="display: none;" role="tabpanel" aria-label="3-qubit gates">
+            <h2>3-Qubit Quantum Gates</h2>
+            
+            <div class="gates-container">
+                <!-- Toffoli Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Toffoli (CCNOT)</h3>
+                    <div class="gate-description">
+                        Controlled-controlled-NOT: flips target if both controls are |1⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Toffoli gate">
+                        •―――<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;•<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊕
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        CCNOT|000⟩ = |000⟩<br>
+                        CCNOT|110⟩ = |111⟩<br>
+                        CCNOT|111⟩ = |110⟩<br>
+                        Leaves other states unchanged
+                    </div>
+                </div>
+                
+                <!-- Fredkin Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Fredkin (CSWAP)</h3>
+                    <div class="gate-description">
+                        Controlled-SWAP: swaps target qubits if control is |1⟩.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Fredkin gate">
+                        •―――<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;×<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;×
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        CSWAP|000⟩ = |000⟩<br>
+                        CSWAP|101⟩ = |110⟩<br>
+                        CSWAP|110⟩ = |101⟩<br>
+                        Leaves other states unchanged
+                    </div>
+                </div>
+                
+                <!-- Controlled SWAP -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Controlled SWAP</h3>
+                    <div class="gate-description">
+                        Single control version of SWAP gate.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Controlled SWAP gate">
+                        •―――<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;×<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;×
+                    </div>
+                    <div class="gate-matrix">
+                        <div class="matrix-row">
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                        </div>
+                        <div class="matrix-row">
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">0</div>
+                            <div class="matrix-cell">1</div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        CSWAP|100⟩ = |100⟩<br>
+                        CSWAP|101⟩ = |110⟩<br>
+                        CSWAP|110⟩ = |101⟩<br>
+                        CSWAP|111⟩ = |111⟩
+                    </div>
+                </div>
+                
+                <!-- Deutsch Gate -->
+                <div class="gate-card">
+                    <h3 class="gate-title">Deutsch Gate</h3>
+                    <div class="gate-description">
+                        Universal 3-qubit gate for quantum computation with parameter θ.
+                    </div>
+                    <div class="gate-circuit" aria-label="Circuit symbol for Deutsch gate">
+                        •―――<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;•<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D(θ)
+                    </div>
+                    <div class="gate-matrix">
+                        <div style="text-align: center; font-family: monospace; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="margin-bottom: 10px;"><strong>8×8 Parameterized Matrix</strong></div>
+                            <div style="font-size: 0.9rem; line-height: 1.4;">
+                                Diagonal elements: 1 (except last two)<br>
+                                Last two diagonal elements: cos(θ), -cos(θ)<br>
+                                Off-diagonal elements: ±sin(θ) in specific positions<br>
+                                <br>
+                                <em>When θ = π/2: becomes Toffoli gate</em><br>
+                                <em>When θ = π/4: creates quantum superposition</em>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="state-transformation">
+                        D(θ)|000⟩ = |000⟩<br>
+                        D(θ)|110⟩ = cos(θ)|110⟩ + sin(θ)|111⟩<br>
+                        D(θ)|111⟩ = -sin(θ)|110⟩ + cos(θ)|111⟩<br>
+                        Other states unchanged
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to handle tab switching
+        function switchTab(qubits) {
+            console.log('Switching to', qubits, 'qubits');
+            
+            // Map qubit numbers to section IDs
+            const sectionMap = {
+                '1': 'one-qubit-gates',
+                '2': 'two-qubit-gates', 
+                '3': 'three-qubit-gates'
+            };
+            
+            // Hide all gate sections
+            const sections = ['one-qubit-gates', 'two-qubit-gates', 'three-qubit-gates'];
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.style.display = 'none';
+                }
+            });
+            
+            // Show selected gate section
+            const sectionId = sectionMap[qubits];
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.style.display = 'block';
+                console.log('Showing section:', selectedSection.id);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+        
+        // Function to update button states
+        function updateButtonStates(activeButton) {
+            document.querySelectorAll('.qubit-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            
+            activeButton.classList.add('active');
+            activeButton.setAttribute('aria-selected', 'true');
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up event listeners');
+            
+            // Get all qubit buttons
+            const buttons = document.querySelectorAll('.qubit-button');
+            console.log('Found', buttons.length, 'buttons');
+            
+            // Add click event listeners
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log('Button clicked:', this.textContent);
+                    
+                    // Update button states
+                    updateButtonStates(this);
+                    
+                    // Get qubit count and switch tabs
+                    const qubits = this.getAttribute('data-qubits');
+                    switchTab(qubits);
+                });
+            });
+            
+            // Initialize with first tab active
+            const firstButton = document.querySelector('.qubit-button.active');
+            if (firstButton) {
+                const qubits = firstButton.getAttribute('data-qubits');
+                switchTab(qubits);
+            }
+        });
+    </script>
+</body>
+</html>

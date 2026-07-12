@@ -11,6 +11,10 @@
 </p>
 
 <p align="center">
+  <a href="https://inspiring-praline-f198cd.netlify.app"><img src="https://img.shields.io/badge/%E2%96%B6%20LIVE%20DEMO-open%20the%20lab-38bdf8?style=for-the-badge&labelColor=0a1020" alt="Live demo" height="36" /></a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/status-live%20demo-38bdf8?style=for-the-badge" alt="live demo" />
   <img src="https://img.shields.io/badge/backend-none%20(100%25%20static)-a78bfa?style=for-the-badge" alt="static" />
   <img src="https://img.shields.io/badge/physics-real%20%26%20numerical-34d399?style=for-the-badge" alt="real physics" />
@@ -18,11 +22,22 @@
 </p>
 
 <p align="center">
+  <a href="#-a-quick-look"><b>📸 Screenshots</b></a> ·
   <a href="#-launch"><b>🚀 Launch</b></a> ·
   <a href="#-whats-inside"><b>🔭 What's inside</b></a> ·
   <a href="#-the-physics-is-real"><b>🧪 The physics</b></a> ·
   <a href="#-get-in-touch"><b>📬 Contact</b></a>
 </p>
+
+---
+
+## 📸 A quick look
+
+| Landing — 3D atom & glass UI | Periodic Table — 119 live elements |
+|:--:|:--:|
+| ![Landing](assets/screenshot-hero.png) | ![Periodic Table](assets/screenshot-ptable.png) |
+| **Quantum Solver** — circuits, H₂, tunnelling, error-correction | **Knowledge Network** — 130+ concepts, live analytics |
+| ![Quantum Solver](assets/screenshot-quantum.png) | ![Knowledge Network](assets/screenshot-net.png) |
 
 ---
 

@@ -63,7 +63,7 @@
     </div>
   </div>
   <nav class="tabs">
-    <button data-view="lab" class="active">⚛ Atom Lab</button>
+    <button data-view="lab">⚛ Atom Lab</button>
     <button data-view="net">🧠 Knowledge Network</button>
     <button data-view="demos">🎬 Demonstrations</button>
     <button data-view="lib">📖 Equation Library</button>
@@ -71,7 +71,7 @@
     <button data-view="sim">🔬 Atom Sim + Beam</button>
     <button data-view="quantum">🧮 Quantum solver</button>
     <button data-view="notebook">📓 Notebook</button>
-    <button data-view="about">ℹ️ About</button>
+    <button data-view="about" class="active">ℹ️ About</button>
   </nav>
   <span class="spacer"></span>
   <span class="tex-warning" id="texWarn">⚠ math CDN offline — showing plain-text equations</span>
@@ -79,7 +79,7 @@
 
 <main>
   <!-- ===================== ATOM LAB ===================== -->
-  <section id="view-lab" class="view active">
+  <section id="view-lab" class="view">
     <div class="stage-wrap">
       <canvas id="atomCanvas"></canvas>
 
@@ -387,8 +387,25 @@
   </section>
 
   <!-- ===================== ABOUT / READ ME ===================== -->
-  <section id="view-about" class="view">
+  <section id="view-about" class="view active">
     <div class="about-wrap">
+
+      <!-- consent gate: the other tabs stay locked until this is accepted -->
+      <div class="consent" id="consentCard">
+        <span class="consent-badge">Start here</span>
+        <h2>👋 Welcome to the Quantum Atom Lab</h2>
+        <p class="consent-lead">A free, interactive way to explore real quantum &amp; atomic physics — right in your browser.
+          A few quick things to know before you begin:</p>
+        <ul class="consent-list">
+          <li><span>🎓</span><div><b>It's educational.</b> The models are genuine physics but simplified and idealized for clarity — not intended for professional, medical or safety-critical use.</div></li>
+          <li><span>🔒</span><div><b>It's private.</b> Everything runs on your device: no account, no tracking, nothing uploaded. Your lab notebook is saved only in this browser.</div></li>
+          <li><span>🧪</span><div><b>It's live.</b> Every number is computed on the spot from the physics equations — nothing here is pre-recorded.</div></li>
+        </ul>
+        <label class="consent-check"><input type="checkbox" id="consentChk" /> <span>I understand this is an educational demo and accept the above.</span></label>
+        <button class="consent-btn" id="consentAccept" disabled>Accept &amp; open the lab →</button>
+        <div class="consent-hint" id="consentHint">🔒 The other tabs unlock the moment you accept.</div>
+      </div>
+
       <header class="about-hero">
         <div class="about-logo"></div>
         <h1>Quantum Atom Lab</h1>
@@ -401,6 +418,14 @@
           <span>🧪 real &amp; numerical</span><span>🧊 three.js + KaTeX</span>
         </div>
       </header>
+
+      <h2 class="about-h">🧭 How to use it</h2>
+      <div class="about-use">
+        <div class="use-step"><span class="use-n">1</span><div><b>Pick a tab</b> along the top — each is a different lens on the same physics.</div></div>
+        <div class="use-step"><span class="use-n">2</span><div><b>Interact</b> — hover the vectors on an atom, click an element, build a quantum circuit, fire a beam, or drag two atoms together.</div></div>
+        <div class="use-step"><span class="use-n">3</span><div><b>Read the math</b> — every panel reveals the real equation and the live numbers behind what you just did.</div></div>
+        <div class="use-step"><span class="use-n">4</span><div><b>Keep notes</b> — drop any equation or experiment into the 📓 Notebook (it saves in your browser).</div></div>
+      </div>
 
       <h2 class="about-h">🔭 What's inside</h2>
       <div class="about-grid">
@@ -488,6 +513,7 @@
 <script src="js/worked-examples.js"></script>
 <script src="js/main.js"></script>
 <script src="js/autopopulate.js"></script>
+<script src="js/consent.js"></script>
 
 <!-- 3D landing hero (three.js is vendored locally; degrades gracefully) -->
 <script src="vendor/three.min.js"></script>

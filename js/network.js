@@ -20,8 +20,8 @@
   const hiddenDomains = new Set();
   let hoverId=null, selectedId=null, searchTerm="";
   let pathIds=[]; const pathNodeSet=new Set(); const pathEdgeSet=new Set();
-  let cooling=true, stillFrames=0;           // run the sim until it settles, then FREEZE
-  function reheat(){ cooling=true; stillFrames=0; }   // nudge it back to life on a real change
+  let cooling=true, stillFrames=0, coolFrames=0;   // run the sim until it settles, then FREEZE
+  function reheat(){ cooling=true; stillFrames=0; coolFrames=0; }   // nudge it back to life on a real change
   const drag = { node:null, panning:false, lastX:0, lastY:0, moved:0, downX:0, downY:0 };
 
   /* ----------------------------- build graph --------------------------- */
@@ -74,7 +74,7 @@
   /* ----------------------------- physics ------------------------------- */
   function tick(){
     const REP = 3200 + nodes.length*18;      // repulsion scales with population
-    const SPRING=0.02, CLUSTER=0.013, CENTER=0.0005, DAMP=0.85;
+    const SPRING=0.02, CLUSTER=0.013, CENTER=0.0005, DAMP=0.78;
     const rest={concept:72, source:118};
     // repulsion (O(n^2))
     for(let i=0;i<nodes.length;i++){
@@ -118,8 +118,13 @@
     // only simulate while "cooling"; once the layout settles we FREEZE so nodes stop drifting
     if(cooling){
       tick(); tick();
+      coolFrames++;
+      // freeze once the layout is CALM (not perfectly still) so it stops jiggling…
       let mx=0; for(const n of nodes){ if(n.fixed) continue; const s=n.vx*n.vx+n.vy*n.vy; if(s>mx) mx=s; }
-      if(mx < 0.0025){ if(++stillFrames > 18) cooling=false; } else stillFrames=0;
+      if(mx < 0.02){ if(++stillFrames > 10) cooling=false; } else stillFrames=0;
+      // …and a hard backstop so it can never wiggle forever (settles within a few seconds)
+      if(coolFrames > 260) cooling=false;
+      if(!cooling){ for(const n of nodes){ n.vx=0; n.vy=0; } }   // kill residual motion cleanly
     }
     pulseClock += 0.01;
     ctx.clearRect(0,0,W,H);

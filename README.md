@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://inspiring-praline-f198cd.netlify.app"><img src="https://img.shields.io/badge/%E2%96%B6%20LIVE%20DEMO-open%20the%20lab-38bdf8?style=for-the-badge&labelColor=0a1020" alt="Live demo" height="36" /></a>
+  <a href="https://quntum.netlify.app/"><img src="https://img.shields.io/badge/%E2%96%B6%20LIVE%20DEMO-open%20the%20lab-38bdf8?style=for-the-badge&labelColor=0a1020" alt="Live demo" height="36" /></a>
 </p>
 
 <p align="center">

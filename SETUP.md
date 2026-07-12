@@ -9,7 +9,7 @@ Interactive quantum & atomic physics lab — 119 elements, quantum solvers, enta
 
 ## Website
 ```
-https://inspiring-praline-f198cd.netlify.app
+https://quntum.netlify.app/
 ```
 
 ## Topics (add all of these)

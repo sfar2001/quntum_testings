@@ -454,12 +454,18 @@
         <p class="about-note">Validated against known values — hydrogen −13.6 eV, Bell-state entanglement, H₂ ≈ 0.74 Å / −1.14 Ha, and more.</p>
       </div>
 
-      <h2 class="about-h">🧠 How it works</h2>
+      <h2 class="about-h">⚙️ Under the hood — powered by Akka</h2>
       <div class="about-panel">
-        <p>The heavy physics used to run on a separate compute backend. For this public build it was
-          <b>re-implemented in pure JavaScript</b> and wired behind a tiny <code>fetch</code> shim — so the whole lab is completely static.</p>
-        <pre class="about-flow">your click ─▶ fetch("/api/…") ─▶ api-shim.js ─▶ physics-engine.js ─▶ live result
-                              (no network, no server — it all runs on your device)</pre>
+        <p>The full lab is engineered on <b>distributed Akka actor clusters (Java)</b> — I build and run the whole thing on Akka.
+          The physics engine, the 119-element periodic-table server, the knowledge engine and the <b>Quanta</b> AI assistant
+          all run as cooperating Akka actors across the cluster.</p>
+        <p>For this <b>public, static</b> build, that physics was faithfully <b>re-implemented in pure browser JavaScript</b>
+          and wired behind a tiny <code>fetch</code> shim — so the demo you're using needs no server and runs 100% on your device.</p>
+        <pre class="about-flow">full system  ▶  distributed Akka (Java) actor clusters
+this demo    ▶  a static, in-browser JavaScript port
+
+your click ─▶ fetch("/api/…") ─▶ api-shim.js ─▶ physics-engine.js ─▶ live result
+                      (no network, no server — it all runs on your device)</pre>
       </div>
 
       <h2 class="about-h">🌌 Part of a bigger lab</h2>
@@ -472,7 +478,7 @@
           <p>Step <em>inside</em> the physics. A WebXR experience (built for Meta Quest) where you walk through atoms, orbitals and quantum states in room-scale 3D.</p></div>
         <div class="about-card proj">
           <h3>🤖 Quanta — AI lab assistant</h3>
-          <p>A conversational helper, backed by a distributed compute <b>cluster</b>, that reasons over the whole knowledge base, answers physics questions and can drive the lab for you.</p></div>
+          <p>A conversational helper, backed by a distributed <b>Akka</b> actor cluster, that reasons over the whole knowledge base, answers physics questions and can drive the lab for you.</p></div>
         <div class="about-card proj">
           <h3>🧭 Guided Onboarding</h3>
           <p>A step-by-step, interactive introduction that walks newcomers through the lab — from their first atom all the way to running a real quantum circuit.</p></div>

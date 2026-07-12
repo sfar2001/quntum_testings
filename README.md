@@ -73,7 +73,7 @@ This isn't a set of pre-rendered animations. A single in-browser engine solves t
 
 ## 🧠 How it works (the interesting bit)
 
-The heavy physics used to run on a separate compute backend. For this public build it was **re-implemented in pure JavaScript** and wired behind a tiny `fetch` shim:
+The full lab is engineered on **distributed Akka actor clusters (Java)** — the physics engine, the periodic-table server, the knowledge engine and the **Quanta** AI assistant all run as cooperating Akka actors. For this public, static build that physics was faithfully **re-implemented in pure JavaScript** and wired behind a tiny `fetch` shim:
 
 ```
 your click ──► fetch("/api/…") ──► api-shim.js ──► physics-engine.js ──► live result

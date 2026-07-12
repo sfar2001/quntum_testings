@@ -381,6 +381,33 @@ input[type="text"], input[type="number"], input[type="search"] {
 nav.tabs button.tab-locked { opacity: .38; cursor: not-allowed; filter: grayscale(.4); }
 nav.tabs button.tab-locked:hover { transform: none; background: transparent !important; }
 
+/* ---------------- interactive atom + launchpad cards ---------------- */
+.about-atom { display: block; margin: 0 auto 14px; width: 220px; height: 220px; max-width: 62vw; cursor: pointer; }
+
+.about-card.launch { cursor: pointer; }
+.about-card.launch::after {
+  content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  box-shadow: inset 0 0 0 1px rgba(56,189,248,0); transition: box-shadow .2s; pointer-events: none;
+}
+.about-card.launch:hover::after { box-shadow: inset 0 0 0 1px rgba(56,189,248,.35); }
+.about-card.launch { position: relative; }
+.card-go {
+  display: inline-block; margin-top: 11px; font-size: 12px; font-weight: 700; color: #7dd3fc;
+  opacity: 0; transform: translateX(-5px); transition: opacity .18s, transform .18s;
+}
+.about-card.launch:hover .card-go,
+.about-card.launch:focus-visible .card-go { opacity: 1; transform: translateX(0); }
+.about-card.launch:focus-visible { outline: 2px solid rgba(56,189,248,.6); outline-offset: 2px; }
+
+/* consent "hold" shake when a locked card is clicked */
+@keyframes shakeX {
+  0%,100% { transform: translateX(0); }
+  15% { transform: translateX(-9px); } 30% { transform: translateX(9px); }
+  45% { transform: translateX(-7px); } 60% { transform: translateX(7px); }
+  75% { transform: translateX(-4px); } 90% { transform: translateX(4px); }
+}
+.consent.shake { animation: shakeX .55s cubic-bezier(.36,.07,.19,.97); border-color: rgba(251,191,36,.75); box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 0 2px rgba(251,191,36,.35); }
+
 /* ---------------- "how to use" steps ---------------- */
 .about-use { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
 .use-step {

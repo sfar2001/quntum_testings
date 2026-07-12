@@ -1,142 +1,113 @@
-# Quantum Physics Interactive Suite
+<p align="center">
+  <img src="assets/banner.svg" width="840" alt="Quantum Atom Lab — interactive quantum & atomic physics, computed live in your browser" />
+</p>
 
-A comprehensive collection of interactive, educational web tools for exploring quantum mechanics concepts visually and intuitively. Each tool is fully responsive and works beautifully on both desktop and mobile devices.
+<h1 align="center">⚛️ Quantum Atom Lab</h1>
 
----
+<p align="center">
+  <b>An interactive quantum &amp; atomic-physics playground that runs 100% in your browser.</b><br/>
+  Entanglement, quantum error-correction, molecular bonding, beam scattering, and all 119 elements —<br/>
+  every number is <b>real physics, computed live</b>. No server. No sign-up. Just open it.
+</p>
 
-## 🔗 Unified Navigation
+<p align="center">
+  <img src="https://img.shields.io/badge/status-live%20demo-38bdf8?style=for-the-badge" alt="live demo" />
+  <img src="https://img.shields.io/badge/backend-none%20(100%25%20static)-a78bfa?style=for-the-badge" alt="static" />
+  <img src="https://img.shields.io/badge/physics-real%20%26%20numerical-34d399?style=for-the-badge" alt="real physics" />
+  <img src="https://img.shields.io/badge/built%20with-three.js%20%2B%20KaTeX-f472b6?style=for-the-badge" alt="tech" />
+</p>
 
-All tools are linked by a modern, responsive navigation bar for seamless switching between simulations and calculators. The navigation design is consistent across all tools with hover effects and active states.
-
-Check the Project NOW!!! ==> https://inspiring-praline-f198cd.netlify.app/quntum.html (All tools are available from the navigation bar)
-
----
-
-## ⚛️ Quantum Gates Explorer (`quntumGates.html`)
-
-**Explore and visualize quantum gates and their matrix representations!**
-
-- **Multi-Qubit Support:** Interactive tabs for 1-qubit, 2-qubit, and 3-qubit gates
-- **Comprehensive Gate Library:** 
-  - **1-Qubit Gates:** Pauli-X, Hadamard, Pauli-Z, Phase, T, Identity
-  - **2-Qubit Gates:** CNOT, SWAP, Controlled-Z, Controlled Phase
-  - **3-Qubit Gates:** Toffoli (CCNOT), Fredkin (CSWAP), Controlled SWAP, Deutsch
-- **Matrix Representations:** Each gate displays its complete matrix representation with proper mathematical notation
-- **Interactive Tabs:** Smooth switching between qubit counts with visual feedback
-- **Mobile Responsive:** Optimized layout for all screen sizes
-- **Educational Content:** Clear explanations of each gate's function and properties
+<p align="center">
+  <a href="#-launch"><b>🚀 Launch</b></a> ·
+  <a href="#-whats-inside"><b>🔭 What's inside</b></a> ·
+  <a href="#-the-physics-is-real"><b>🧪 The physics</b></a> ·
+  <a href="#-get-in-touch"><b>📬 Contact</b></a>
+</p>
 
 ---
 
-## 🌀 Quantum Entanglement Simulator (`enteglment.html`)
+## 🚀 Launch
 
-**Visualize and interact with quantum entanglement!**
+**Just open `index.html`** — that's the whole app.
 
-- **Bell State Preparation:** Instantly create any of the four Bell states (|Φ⁺⟩, |Φ⁻⟩, |Ψ⁺⟩, |Ψ⁻⟩) with a click.
-- **Interactive Measurement:** Measure either qubit A or B and see the entanglement effect in real time—observe how the measurement of one instantly determines the state of the other, as predicted by quantum mechanics.
-- **Dynamic Canvas Visualization:** Qubits and their entanglement are visualized on a canvas, with color-coded states and a connecting line for entangled pairs.
-- **State Information Panel:** Clear, real-time explanations of the current quantum state, measurement results, and the entanglement relationship.
-- **Reset Functionality:** Instantly reset the system to try new experiments.
-- **Mobile Friendly:** Layout, controls, and canvas adapt for small screens.
+```bash
+# any static host works, or simply double-click index.html
+npx serve .        # → http://localhost:3000
+```
 
----
+Deployed on **Netlify** as a plain static folder — drag the folder into Netlify (or connect the repo) and it's live. There is nothing to build and nothing to run.
 
-## 🌐 Bloch Sphere Visualization (`bloch_sphere.html`)
-
-**Explore the geometry of a single qubit state!**
-
-- **Interactive 3D Visualization:** Rotate and explore the Bloch sphere in your browser using Plotly.js.
-- **State Vector Control:** Adjust θ (theta) and φ (phi) with sliders to see how the quantum state vector moves on the sphere.
-- **Measurement Probabilities:** Instantly see the probabilities of measuring |0⟩ and |1⟩ for the current state.
-- **Detailed Explanations:** Learn about the Bloch sphere, the meaning of θ and φ, and the quantum state formula.
-- **Consistent Navigation:** Access all other quantum tools from the top navigation bar.
-- **Responsive Design:** Works beautifully on desktop and mobile.
+> Press **“Launch the Lab →”** on the landing screen to enter. Everything computes on your device.
 
 ---
 
-## 🧊 10 Particles in a 3D Box (`exemple10particuls.html`)
+## 🔭 What's inside
 
-**Explore quantum probability densities for multiple particles in a box!**
-
-- **Parameter Controls:** Set box length, particle mass, and time to see how quantum states evolve.
-- **3D Visualization:** Uses Plotly.js to render a 3D scatter plot of the probability density for 10 quantum particles, each in a different quantum state.
-- **Real Quantum Numbers:** Simulates the first 10 quantum states in a cubic box.
-- **Live Updates:** Change parameters and instantly update the visualization.
-- **Responsive Design:** Graph and controls scale for mobile and desktop.
-
----
-
-## 💡 Quantum Photonics Calculator (`quntum.html`)
-
-**Calculate and visualize foundational quantum physics equations!**
-
-- **Planck's Law Calculator:** Enter a frequency to compute photon energy using \( E = h \cdot f \).
-- **Einstein's Photoelectric Effect:** Enter a wavelength to compute photon energy using \( E = h \cdot \nu \).
-- **Schrödinger Equation (Simplified):** Input position, width, and amplitude to compute and display the probability density of a Gaussian wave packet.
-- **Time-Dependent Schrödinger Equation:** Simulate and visualize the evolution of a wavefunction over time on a canvas.
-- **MathJax Rendering:** All equations are beautifully typeset for clarity.
-- **Fully Responsive:** All calculators and visualizations adapt to any device.
+| | Module | What you can do |
+|---|---|---|
+| ⚛️ | **Atom Lab** | Hover any vector on a live atom to reveal the exact equation behind it — Coulomb force, spin precession, Bloch rotation, bonding. |
+| 🧠 | **Knowledge Network** | A force-directed map of ~130 physics concepts across 7 domains. Search, drag, and find the **shortest path between any two ideas**. |
+| 🎬 | **Demonstrations** | Animated cards where *the motion is the math* — orbits, oscillations, phonons, precession, entanglement. |
+| 📖 | **Equation Library** | Every equation, tagged by domain and provenance, with worked examples you can expand. |
+| 🧪 | **Periodic Table** | All **119 elements**, each with its classical (Bohr), quantum (Schrödinger) and spin/molecular behaviour — computed on the spot. |
+| 🔬 | **Atom Sim + Beam** | Fire a photon or a particle at any atom and watch it **photo-ionize, excite, Compton-scatter, or Rutherford-deflect** — with the calculation revealed step by step. |
+| 🧮 | **Quantum Solver** | A real numerical Schrödinger solver, a **1–3 qubit circuit simulator** (Bell/GHZ, Bloch spheres, entanglement), the **H₂ dissociation curve**, a **time-dependent wave-packet** (tunnelling), and a **quantum-error-correction threshold** demo. |
+| 📓 | **Notebook** | Your own lab notebook — drop in equations, run experiments, drag atoms together to react them. Saved in your browser. |
 
 ---
 
-## 📊 Spherical to Cartesian Benchmark (`coords_benchmark.html`)
+## 🧪 The physics is real
 
-**Convert between spherical and Cartesian coordinate systems!**
+This isn't a set of pre-rendered animations. A single in-browser engine solves the actual equations, live:
 
-- **Coordinate Conversion:** Input spherical coordinates (r, θ, φ) and get Cartesian coordinates (x, y, z)
-- **Reverse Conversion:** Input Cartesian coordinates and get spherical coordinates
-- **Real-time Calculation:** Instant results with proper mathematical notation
-- **Educational Tool:** Perfect for understanding coordinate system transformations
-- **Responsive Design:** Works on all devices
+- **Schrödinger** — a finite-difference radial eigensolve (QL algorithm on a 500-point grid), benchmarked against the exact hydrogen levels.
+- **Quantum circuits** — a full complex state-vector simulator: gates, per-qubit Bloch vectors, reduced density matrices, entanglement, and sampled measurement.
+- **H₂ molecule** — STO-3G Gaussian integrals + a 2-configuration full-CI → the famous dissociation curve **E(R)** and an effective qubit Hamiltonian.
+- **Wave packets** — the time-dependent Schrödinger equation by split-step Fourier (free / harmonic / barrier tunnelling / soliton).
+- **Error correction** — repetition-code logical error (exact + Monte-Carlo) and the surface-code sub-threshold story.
+- **Beams & bonding** — photoelectric effect, Compton scattering, Rutherford scattering, and ionic/covalent/metallic bond prediction.
 
----
-
-## 🚀 Getting Started
-
-1. **Open any HTML file in your browser** (no server required).
-2. **Navigate** using the top bar to switch between tools.
-3. **Interact** with the controls and visualizations to explore quantum phenomena.
+*Validated against known values* (hydrogen −13.6 eV, Bell-state entanglement, H₂ ≈ 0.74 Å / −1.14 Ha, and more).
 
 ---
 
-## 📱 Mobile-First Design
+## 🧠 How it works (the interesting bit)
 
-- All tools are optimized for phones and tablets.
-- Controls, inputs, and visualizations resize and reflow for usability on any screen.
-- Consistent navigation experience across all devices.
+The heavy physics used to run on a separate compute backend. For this public build it was **re-implemented in pure JavaScript** and wired behind a tiny `fetch` shim:
 
----
+```
+your click ──► fetch("/api/…") ──► api-shim.js ──► physics-engine.js ──► live result
+                                        (no network, no server — it all runs on your device)
+```
 
-## 🧑‍🔬 Educational Value
+```
+index.html            the app + 3D landing hero
+theme-mac.css         macOS-style glass / shadow layer
+js/physics-engine.js  all the real numerical physics
+js/api-shim.js        turns /api/* calls into in-browser computation
+js/hero.js            the three.js atom on the landing screen
+```
 
-- Perfect for students, educators, and enthusiasts wanting to experiment with quantum mechanics concepts hands-on.
-- Visual, interactive, and intuitive—no prior coding or advanced math required.
-- Comprehensive coverage of fundamental quantum concepts from gates to entanglement.
-
----
-
-## 📂 File Overview
-
-- `quntumGates.html` — Quantum Gates Explorer with Matrix Representations
-- `enteglment.html` — Quantum Entanglement Simulator
-- `bloch_sphere.html` — Bloch Sphere Visualization
-- `exemple10particuls.html` — 10 Particles in a 3D Box Visualization
-- `quntum.html` — Quantum Photonics Calculator & Schrödinger Equation Visualizer
-- `coords_benchmark.html` — Spherical to Cartesian Benchmark Tool
-- `index.html` — Landing page with navigation to all tools
+The result: a rich, multi-tab physics lab that is **completely static** — perfect for GitHub Pages or Netlify, and it even works from a `file://` double-click.
 
 ---
 
-## ✨ Recent Updates
+## 🌌 Part of a bigger lab
 
-- **Unified Navigation Design:** All tools now feature consistent navigation styling with hover effects and active states
-- **Quantum Gates Tool:** Added comprehensive quantum gates explorer with 1, 2, and 3-qubit gates
-- **Enhanced Mobile Experience:** Improved responsiveness across all tools
-- **Bug Fixes:** Resolved JavaScript errors and improved tab switching functionality
-- **Matrix Representations:** Added complete matrix displays for all quantum gates
+- **🔬 Quantum Atom Lab** — the interactive simulation in this repo (you're looking at it).
+- **🥽 VR Quantum World** — a WebXR experience for Meta Quest: walk through atoms, orbitals and quantum states in room-scale 3D.
+- **🤖 Quanta** — an AI lab assistant, backed by a distributed compute cluster, that reasons over the knowledge base and can drive the lab.
+- **🧭 Guided Onboarding** — a step-by-step interactive tour, from first atom to first quantum circuit.
+
+*Curious about any of these? [Get in touch](#-get-in-touch).*
 
 ---
 
-## ✨ Credits
+## 📬 Get in touch
 
-Created as an educational resource to make quantum physics accessible and engaging for everyone. 
+I build interactive science &amp; engineering tools. If you like this, want a collaboration, or have an idea — I'd love to hear from you.
+
+- 💻 **GitHub** — [@sfar2001](https://github.com/sfar2001)
+- ✉️ **Email** — [adam@actimi.com](mailto:adam@actimi.com)
+
+<p align="center"><sub>Designed &amp; built by <b>sfar2001</b> · quantum physics, made touchable.</sub></p>

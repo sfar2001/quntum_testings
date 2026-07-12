@@ -1,64 +1,496 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=quntum.html">
-    <title>Redirecting...</title>
-    <script>
-        // JavaScript fallback for redirect
-        window.location.replace('quntum.html');
-    </script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quantum Atom Lab — interactive quantum physics, in your browser</title>
+<meta name="description" content="An interactive quantum &amp; atomic physics lab: entanglement, quantum error-correction, molecular bonding, beam scattering and all 119 elements — real physics computed live in your browser, no server. Built by sfar2001." />
+<meta name="author" content="sfar2001" />
+<meta name="theme-color" content="#0a1020" />
+<meta property="og:title" content="Quantum Atom Lab" />
+<meta property="og:description" content="Interactive quantum &amp; atomic physics — real solvers running 100% in your browser." />
+<meta property="og:type" content="website" />
+
+<!-- KaTeX (math rendering). If offline, katex-helper.js falls back to plain text. -->
+<link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+  integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
+  crossorigin="anonymous" />
+<script defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+  integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+  crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="theme-mac.css" />
 </head>
 <body>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
-            margin: 0;
-            padding: 0;
-        }
-        nav {
-            background: #333;
-            padding: 10px 0 10px 0;
-            margin-bottom: 28px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        nav .nav-inner {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: color 0.2s;
-            padding: 8px 12px;
-            border-radius: 4px;
-        }
-        nav a:hover {
-            background: #444;
-        }
-        nav a.active {
-            background: #555;
-            color: #ffd700;
-        }
-    </style>
-    <nav>
-        <div class="nav-inner">
-            <a href="enteglment.html">Entanglement</a>
-            <a href="exemple10particuls.html">10 Particles</a>
-            <a href="quntum.html">Photonics</a>
-            <a href="coords_benchmark.html">Coords Benchmark</a>
-            <a href="bloch_sphere.html">Bloch Sphere</a>
-            <a href="quntumGates.html">Gates</a>
+
+<!-- ===================== 3D LANDING HERO ===================== -->
+<div id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-card">
+    <div class="hero-titlebar"><i></i><i></i><i></i><span>Quantum Atom Lab</span></div>
+    <div class="hero-body">
+      <p class="hero-eyebrow">Interactive physics · 100% in your browser</p>
+      <h1>Quantum&nbsp;Atom&nbsp;Lab</h1>
+      <p class="lead">Explore atoms, entanglement, quantum error-correction, molecular bonding
+        and the whole periodic table — every number is <b>real physics, computed live</b>,
+        with no server behind it.</p>
+      <div class="hero-chips">
+        <span>⚛ 119 elements</span>
+        <span>🧮 quantum solvers</span>
+        <span>🔬 beam &amp; scattering</span>
+        <span>🧠 knowledge map</span>
+        <span>⚡ zero backend</span>
+      </div>
+      <button class="hero-cta" id="heroLaunch">Launch the Lab →</button>
+      <div class="hero-foot">
+        <span class="by">Built by <b>sfar2001</b></span> ·
+        <a href="https://github.com/sfar2001" target="_blank" rel="noopener">GitHub</a> ·
+        <a href="mailto:adam@actimi.com">Get in touch</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <h1>Quantum Atom Lab</h1>
+      <p>Interactive quantum &amp; atomic physics — hover a vector, see the equation behind it.</p>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button data-view="lab" class="active">⚛ Atom Lab</button>
+    <button data-view="net">🧠 Knowledge Network</button>
+    <button data-view="demos">🎬 Demonstrations</button>
+    <button data-view="lib">📖 Equation Library</button>
+    <button data-view="ptable">🧪 Periodic Table</button>
+    <button data-view="sim">🔬 Atom Sim + Beam</button>
+    <button data-view="quantum">🧮 Quantum solver</button>
+    <button data-view="notebook">📓 Notebook</button>
+    <button data-view="about">ℹ️ About</button>
+  </nav>
+  <span class="spacer"></span>
+  <span class="tex-warning" id="texWarn">⚠ math CDN offline — showing plain-text equations</span>
+</header>
+
+<main>
+  <!-- ===================== ATOM LAB ===================== -->
+  <section id="view-lab" class="view active">
+    <div class="stage-wrap">
+      <canvas id="atomCanvas"></canvas>
+
+      <div class="scene-bar" id="sceneBar"><!-- scene buttons injected --></div>
+      <div class="vec-legend" id="vecLegend"><!-- vector chips injected --></div>
+      <div class="gate-bar" id="gateBar"><!-- gate buttons injected --></div>
+
+      <div class="scene-tagline" id="sceneTagline"></div>
+      <button class="play-toggle" id="playToggle">⏸ pause motion</button>
+      <div class="canvas-tip" id="canvasTip"></div>
+    </div>
+
+    <aside class="detail" id="detailPanel">
+      <h2>Vector inspector</h2>
+      <div class="vec-title" id="detailTitle">Hover a vector</div>
+      <div id="detailBody">
+        <p class="placeholder">
+          Move your cursor over any arrow on the atom (or click a chip on the left).
+          Each vector reveals the real equation behind it, what it makes the atom
+          <em>do</em>, the variables, and which source paper it came from.
+        </p>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ===================== KNOWLEDGE NETWORK ===================== -->
+  <section id="view-net" class="view">
+    <canvas id="netCanvas"></canvas>
+    <div class="net-legend" id="netLegend">
+      <h3>Domains <span style="color:var(--text-faint);font-weight:400">(click to toggle)</span></h3>
+      <div id="netLegendRows"></div>
+      <div class="tip">Drag the background to pan · scroll to zoom · drag a node to pull it · click a node for details.</div>
+    </div>
+    <div class="net-search">
+      <input id="netSearch" type="text" placeholder="search equations / concepts…" />
+    </div>
+    <div class="net-detail" id="netDetail">
+      <span class="close" id="netDetailClose">×</span>
+      <div id="netDetailBody"></div>
+    </div>
+    <div class="net-stats" id="netStats"></div>
+
+    <!-- Knowledge engine panel: live graph analytics + concept-path explorer -->
+    <div class="brain-panel" id="brainPanel">
+      <div class="bp-head">
+        <span>🧠 Knowledge&nbsp;engine</span>
+        <button id="brainPanelToggle" title="collapse / expand">▾</button>
+      </div>
+      <div class="bp-body">
+        <div class="bp-conn" id="brainConn"></div>
+        <div class="bp-bridges" id="brainBridges"></div>
+        <div class="bp-hubs" id="brainHubs"></div>
+        <div class="bp-explorer">
+          <div class="bp-x-title">Connect two ideas</div>
+          <input id="brainFrom" list="brainConceptList" placeholder="from concept… (e.g. Coulomb force)" />
+          <input id="brainTo" list="brainConceptList" placeholder="to concept… (e.g. Quantum teleportation)" />
+          <datalist id="brainConceptList"></datalist>
+          <button id="brainPathBtn">Find shortest path</button>
+          <div class="bp-out" id="brainPathOut"></div>
         </div>
-    </nav>
-    <p>If you are not redirected automatically, <a href="quntum.html">click here</a>.</p>
+      </div>
+    </div>
+    <div class="brain-badge" id="brainBadge"></div>
+  </section>
+
+  <!-- ===================== LIBRARY ===================== -->
+  <section id="view-lib" class="view">
+    <div class="lib-head">
+      <h2>Equation Library</h2>
+      <p>Every equation distilled from the source physics papers, tagged by domain and
+         by provenance. <span class="prov in-text" style="padding:1px 6px;border-radius:5px">in-text</span>
+         = printed in the paper · <span class="prov in-text-prose" style="padding:1px 6px;border-radius:5px">prose</span>
+         = described in words · <span class="prov standard-supplied" style="padding:1px 6px;border-radius:5px">standard</span>
+         = canonical physics added to complete the picture.</p>
+    </div>
+    <div class="src-strip" id="srcStrip"></div>
+    <div class="lib-filters" id="libFilters"></div>
+    <div class="lib-grid" id="libGrid"></div>
+  </section>
+
+  <!-- ===================== PERIODIC TABLE ===================== -->
+  <section id="view-ptable" class="view">
+    <div class="pt-wrap">
+      <div class="pt-tablecol">
+        <div class="pt-head">
+          <h2>Periodic Table — computed atom behaviour</h2>
+          <p>All 119 elements, each computed live <strong>in your browser</strong>
+             from the same classical / quantum / spin
+             equations as the rest of the lab. <span id="ptSource" class="pt-source"></span></p>
+        </div>
+        <div class="pt-grid" id="ptableMain"></div>
+        <div class="pt-fblock" id="ptableF"></div>
+        <div class="pt-legend" id="ptLegend"></div>
+      </div>
+      <aside class="pt-detail" id="ptableDetail">
+        <p class="placeholder">Click any element to see its electron structure and its
+          <em>classical</em> (Bohr orbit), <em>quantum</em> (Schrödinger levels) and
+          <em>molecular / spin</em> (magnetic moment, qubit encoding) behaviour.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================== ATOM SIM + BEAM ===================== -->
+  <section id="view-sim" class="view">
+    <div class="sim-wrap">
+      <div class="sim-stage-col">
+        <div class="sim-controls">
+          <label>Target
+            <select id="simElement"></select>
+          </label>
+          <label>Beam
+            <select id="simType">
+              <option value="light">Light (photon)</option>
+              <option value="material">Material (particle)</option>
+            </select>
+          </label>
+          <span class="sim-grp" id="simLightCtl">
+            <label>λ
+              <input id="simWavelength" type="number" value="0.05" min="0" step="any" />
+              <select id="simUnit"><option value="nm">nm</option><option value="pm">pm</option></select>
+            </label>
+          </span>
+          <span class="sim-grp" id="simMaterialCtl" style="display:none">
+            <label>Projectile
+              <select id="simProjectile"></select>
+            </label>
+            <label>Energy
+              <input id="simEnergy" type="number" value="500" min="0" step="any" />
+              <select id="simEnergyUnit"><option value="keV">keV</option><option value="MeV">MeV</option><option value="eV">eV</option></select>
+            </label>
+          </span>
+          <label>Angle
+            <input id="simAngle" type="range" min="0" max="180" value="90" />
+            <span id="simAngleVal">90°</span>
+          </label>
+          <label>Target shell
+            <select id="simShell"></select>
+          </label>
+          <button id="simFire">▶ Fire beam</button>
+        </div>
+        <canvas id="simCanvas"></canvas>
+        <p class="sim-hint">Pick an element to watch its nucleus and electron shells.
+          Choose a wavelength (e.g. <code>0.05 nm</code> X-ray, <code>121.5 nm</code> UV, <code>550 nm</code> visible),
+          an angle, and which shell to hit — your browser computes the photon↔electron
+          interaction live and logs every shot.</p>
+      </div>
+      <aside class="pt-detail sim-detail" id="simDetail">
+        <p class="placeholder">Pick an element and fire a beam to see whether the photon
+          ionizes, excites, Compton-scatters or elastically scatters off the targeted electron.</p>
+        <div class="sim-history" id="simHistory"></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================== QUANTUM SOLVER ===================== -->
+  <section id="view-quantum" class="view">
+    <div class="q-bar">
+      <span class="q-bar-title">🧮 Quantum solver — drag each card by its title, scroll to zoom, drag the background to pan</span>
+      <span class="board-zoom">
+        <button id="qZoomOut" title="zoom out">−</button>
+        <button id="qZoomReset" title="reset view">⊙</button>
+        <button id="qZoomIn" title="zoom in">+</button>
+        <button id="qFit" title="fit all cards">⤢</button>
+      </span>
+    </div>
+    <div class="q-wrap" id="qBoard">
+      <div class="q-card">
+        <h2>Numerical Schrödinger solver</h2>
+        <p>This discretises, live in your browser, the radial l=0 Coulomb equation
+          <code>−½u″ − (Z/r)u = E u</code> and diagonalises it (finite-difference + QL). This is a real
+          eigensolve, not the formula — compare its energies to the closed form, and see the actual
+          wavefunctions.</p>
+        <div class="q-controls">
+          <label>Element <select id="qsElement"></select></label>
+          <button id="qsSolve">Solve ψ(r)</button>
+        </div>
+        <div id="qsOut"><p class="placeholder">Pick an element and solve. (Hydrogen is the exact benchmark.)</p></div>
+      </div>
+
+      <div class="q-card q-card-wide">
+        <h2>Quantum circuit (1–3 qubits)</h2>
+        <p>Choose how many qubits, build a circuit from gates, and measure. Your browser computes the
+          full state vector, each qubit's Bloch vector & expectation values ⟨X⟩⟨Y⟩⟨Z⟩, entanglement, and
+          a sampled measurement histogram — plus all the qubit equations with live values.</p>
+        <div class="q-controls">
+          <label>Qubits <select id="qcN"><option>1</option><option selected>2</option><option>3</option></select></label>
+          <label>Shots <input id="qcShots" type="number" value="1024" /></label>
+          <button id="qcRun">Run circuit</button>
+          <span class="qc-presets">presets: <button data-preset="bell">Bell</button><button data-preset="ghz">GHZ</button></span>
+        </div>
+        <div class="qc-build">
+          <div class="qc-grp">
+            <span>1-qubit</span>
+            <button data-g="H">H</button><button data-g="X">X</button><button data-g="Y">Y</button>
+            <button data-g="Z">Z</button><button data-g="S">S</button><button data-g="T">T</button>
+            <label>on <select id="qcQ1"></select></label>
+          </div>
+          <div class="qc-grp">
+            <span>multi</span>
+            <button data-g="CX">CNOT</button><button data-g="CZ">CZ</button><button data-g="SW">SWAP</button><button data-g="CCX">Toffoli</button>
+            <label>ctrl <select id="qcC1"></select></label>
+            <label>ctrl2 <select id="qcC2"></select></label>
+            <label>target <select id="qcT"></select></label>
+          </div>
+          <div class="qc-opsbar">
+            <span id="qcOpsView" class="qc-opsview"></span>
+            <button id="qcUndo" class="nb-ghost">undo</button>
+            <button id="qcClear" class="nb-ghost">clear</button>
+          </div>
+        </div>
+        <div id="qcOut"><p class="placeholder">Build a circuit (or pick a preset like Bell / GHZ) and Run.</p></div>
+      </div>
+
+      <div class="q-card">
+        <h2>H₂ molecule — dissociation curve</h2>
+        <p>This computes H₂ from STO-3G integrals and a 2-configuration full-CI in the σ_g/σ_u
+          molecular orbitals (it diagonalises a real molecular Hamiltonian). The ground state is a
+          bonding/antibonding superposition — an effective qubit.</p>
+        <div class="q-controls"><button id="h2Solve">Solve H₂</button></div>
+        <div id="h2Out"><p class="placeholder">Solve to plot the famous H₂ energy curve E(R).</p></div>
+      </div>
+
+      <div class="q-card">
+        <h2>Wave packet — time-dependent Schrödinger</h2>
+        <p>Split-step Fourier evolution of |ψ(x,t)|² (ℏ=m=1). Free packet drifts at k₀ and spreads;
+          harmonic oscillates; barrier shows tunnelling/reflection; soliton holds its shape.</p>
+        <div class="q-controls">
+          <label>Potential
+            <select id="wpPot"><option value="free">free</option><option value="harmonic">harmonic</option><option value="barrier">barrier</option><option value="soliton">soliton</option></select>
+          </label>
+          <label>k₀ <input id="wpK0" type="number" value="3" step="any" /></label>
+          <button id="wpRun">Evolve</button>
+          <button id="wpPlay">▶ play</button>
+        </div>
+        <div id="wpOut"><p class="placeholder">Evolve to animate the wave packet.</p></div>
+      </div>
+
+      <div class="q-card q-card-wide">
+        <h2>Quantum error correction — the below-threshold story</h2>
+        <p>The gateway to fault-tolerant quantum computing: a logical qubit encoded in many physical
+          qubits gets <em>better</em> as you add qubits — but only if the physical error rate is below a
+          threshold. This recreates that result classically. The <strong>repetition (bit-flip) code</strong>
+          is a real, exactly-simulable code (logical error computed exactly <em>and</em> Monte-Carlo-checked);
+          the <strong>surface code</strong> uses the standard sub-threshold scaling model.</p>
+        <div class="q-controls">
+          <label>Code
+            <select id="qecCode"><option value="repetition">repetition (bit-flip)</option><option value="surface">surface (scaling model)</option></select>
+          </label>
+          <label>Physical error p <input id="qecP" type="number" value="0.1" step="0.01" min="0" max="1" /></label>
+          <label>Distances <input id="qecDist" type="text" value="3,5,7" /></label>
+          <label>Shots <input id="qecShots" type="number" value="20000" /></label>
+          <button id="qecRun">Run</button>
+        </div>
+        <div id="qecOut"><p class="placeholder">Run with p below 0.5 (repetition) and watch larger distances drive the logical error down.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== NOTEBOOK ===================== -->
+  <section id="view-notebook" class="view">
+    <div class="nb-bar">
+      <input id="nbTitle" class="nb-title" placeholder="Notebook title" />
+      <span class="nb-toolbar">
+        <button id="nbAddEq">+ Equation</button>
+        <button id="nbAddNote">+ Note</button>
+        <button id="nbAddTable">+ Table</button>
+        <button id="nbAddIdea">+ Idea</button>
+        <button id="nbAddReaction">+ Atom reaction</button>
+        <button id="nbAddExperiment">+ Experiment</button>
+        <button id="nbAddCombine">+ Combine</button>
+        <button id="nbAddCompare">+ Comparison</button>
+        <button id="nbExport" class="nb-ghost">Copy as Markdown</button>
+        <button id="nbSave" class="nb-ghost">Save now</button>
+      </span>
+      <span class="board-zoom" title="drag a card by its header · scroll to zoom · drag background to pan">
+        <button id="nbZoomOut" title="zoom out">−</button>
+        <button id="nbZoomReset" title="reset view">⊙</button>
+        <button id="nbZoomIn" title="zoom in">+</button>
+        <button id="nbFit" title="fit all cards">⤢</button>
+      </span>
+      <span id="nbStatus" class="nb-status"></span>
+    </div>
+    <div id="nbBlocks" class="nb-board"></div>
+  </section>
+
+  <!-- ===================== DEMONSTRATIONS ===================== -->
+  <section id="view-demos" class="view">
+    <div class="demos-head">
+      <div>
+        <h2>Animated demonstrations</h2>
+        <p>Every card runs the <strong>real math</strong> behind a concept in the brain — orbits, oscillations,
+           phonons, precession, Bloch rotations, entanglement, bonding. The motion you see <em>is</em> the equation.
+           Click any card to expand it, or jump to its concept in the Knowledge Network.</p>
+      </div>
+      <div class="demos-ctrl">
+        <button id="demoPlay">⏸ Pause</button>
+        <label class="demo-speed">speed
+          <input id="demoSpeed" type="range" min="0.2" max="2.5" step="0.1" value="1" />
+          <span id="demoSpeedLab">1.0×</span>
+        </label>
+      </div>
+    </div>
+    <div class="demo-filters" id="demoFilters"></div>
+    <div class="demo-grid" id="demoGrid"></div>
+  </section>
+
+  <!-- ===================== ABOUT / READ ME ===================== -->
+  <section id="view-about" class="view">
+    <div class="about-wrap">
+      <header class="about-hero">
+        <div class="about-logo"></div>
+        <h1>Quantum Atom Lab</h1>
+        <p class="about-tag">An interactive quantum &amp; atomic-physics playground that runs
+          <b>100% in your browser</b>. Entanglement, quantum error-correction, molecular bonding,
+          beam scattering and all 119 elements — every number is <b>real physics, computed live</b>.
+          No server. No sign-up. Just open it.</p>
+        <div class="about-chips">
+          <span>🟢 live demo</span><span>⚡ 100% static</span>
+          <span>🧪 real &amp; numerical</span><span>🧊 three.js + KaTeX</span>
+        </div>
+      </header>
+
+      <h2 class="about-h">🔭 What's inside</h2>
+      <div class="about-grid">
+        <div class="about-card"><h3>⚛️ Atom Lab</h3><p>Hover any vector on a live atom to reveal the exact equation behind it — Coulomb force, spin precession, Bloch rotation, bonding.</p></div>
+        <div class="about-card"><h3>🧠 Knowledge Network</h3><p>A force-directed map of ~130 concepts across 7 domains. Search, drag, and find the shortest path between any two ideas.</p></div>
+        <div class="about-card"><h3>🎬 Demonstrations</h3><p>Animated cards where <em>the motion is the math</em> — orbits, oscillations, phonons, precession, entanglement.</p></div>
+        <div class="about-card"><h3>📖 Equation Library</h3><p>Every equation, tagged by domain and provenance, with worked examples you can expand.</p></div>
+        <div class="about-card"><h3>🧪 Periodic Table</h3><p>All 119 elements, each with its classical (Bohr), quantum (Schrödinger) and spin/molecular behaviour — computed on the spot.</p></div>
+        <div class="about-card"><h3>🔬 Atom Sim + Beam</h3><p>Fire a photon or a particle at any atom and watch it photo-ionize, excite, Compton-scatter, or Rutherford-deflect — step by step.</p></div>
+        <div class="about-card"><h3>🧮 Quantum Solver</h3><p>Numerical Schrödinger solver, a 1–3 qubit circuit simulator (Bell/GHZ, Bloch spheres), the H₂ dissociation curve, wave-packet tunnelling, and a quantum-error-correction threshold demo.</p></div>
+        <div class="about-card"><h3>📓 Notebook</h3><p>Your own lab notebook — drop in equations, run experiments, drag atoms together to react them. Saved in your browser.</p></div>
+      </div>
+
+      <h2 class="about-h">🧪 The physics is real</h2>
+      <div class="about-panel">
+        <p>This isn't a set of pre-rendered animations — a single in-browser engine solves the actual equations, live:</p>
+        <ul class="about-list">
+          <li><b>Schrödinger</b> — finite-difference radial eigensolve (QL algorithm, 500-point grid), benchmarked against the exact hydrogen levels.</li>
+          <li><b>Quantum circuits</b> — a full complex state-vector simulator: gates, Bloch vectors, reduced density matrices, entanglement, sampled measurement.</li>
+          <li><b>H₂ molecule</b> — STO-3G Gaussian integrals + 2-configuration full-CI → the dissociation curve E(R) and an effective qubit Hamiltonian.</li>
+          <li><b>Wave packets</b> — the time-dependent Schrödinger equation by split-step Fourier (free / harmonic / barrier tunnelling / soliton).</li>
+          <li><b>Error correction</b> — repetition-code logical error (exact + Monte-Carlo) and the surface-code sub-threshold story.</li>
+          <li><b>Beams &amp; bonding</b> — photoelectric effect, Compton &amp; Rutherford scattering, and ionic/covalent/metallic bond prediction.</li>
+        </ul>
+        <p class="about-note">Validated against known values — hydrogen −13.6 eV, Bell-state entanglement, H₂ ≈ 0.74 Å / −1.14 Ha, and more.</p>
+      </div>
+
+      <h2 class="about-h">🧠 How it works</h2>
+      <div class="about-panel">
+        <p>The heavy physics used to run on a separate compute backend. For this public build it was
+          <b>re-implemented in pure JavaScript</b> and wired behind a tiny <code>fetch</code> shim — so the whole lab is completely static.</p>
+        <pre class="about-flow">your click ─▶ fetch("/api/…") ─▶ api-shim.js ─▶ physics-engine.js ─▶ live result
+                              (no network, no server — it all runs on your device)</pre>
+      </div>
+
+      <h2 class="about-h">🌌 Part of a bigger lab</h2>
+      <div class="about-grid">
+        <div class="about-card proj"><span class="proj-badge">you're here</span>
+          <h3>🔬 Quantum Atom Lab</h3>
+          <p>The interactive <b>simulation</b> you're exploring now — atoms, quantum solvers, the periodic table and more, all computed live in your browser.</p></div>
+        <div class="about-card proj">
+          <h3>🥽 VR Quantum World</h3>
+          <p>Step <em>inside</em> the physics. A WebXR experience (built for Meta Quest) where you walk through atoms, orbitals and quantum states in room-scale 3D.</p></div>
+        <div class="about-card proj">
+          <h3>🤖 Quanta — AI lab assistant</h3>
+          <p>A conversational helper, backed by a distributed compute <b>cluster</b>, that reasons over the whole knowledge base, answers physics questions and can drive the lab for you.</p></div>
+        <div class="about-card proj">
+          <h3>🧭 Guided Onboarding</h3>
+          <p>A step-by-step, interactive introduction that walks newcomers through the lab — from their first atom all the way to running a real quantum circuit.</p></div>
+      </div>
+
+      <div class="about-contact">
+        <h2>📬 Get in touch</h2>
+        <p>I build interactive science &amp; engineering tools. Like this, want to collaborate, or have an idea? I'd love to hear from you.</p>
+        <div class="about-contact-btns">
+          <a class="about-btn primary" href="https://github.com/sfar2001" target="_blank" rel="noopener">💻 GitHub — @sfar2001</a>
+          <a class="about-btn" href="mailto:adam@actimi.com">✉️ Email me</a>
+        </div>
+        <p class="about-sign">Designed &amp; built by <b>sfar2001</b> · quantum physics, made touchable.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- scripts: static physics engine + fetch shim FIRST (replaces the original compute backend),
+     then data, then helpers, then views, then bootstrap -->
+<script src="js/physics-engine.js"></script>
+<script src="js/api-shim.js"></script>
+<script src="js/knowledge-data.js"></script>
+<script src="js/katex-helper.js"></script>
+<script src="js/atom-lab.js"></script>
+<script src="js/network.js"></script>
+<script src="js/brain.js"></script>
+<script src="js/demos.js"></script>
+<script src="js/board.js"></script>
+<script src="js/periodic-data.js"></script>
+<script src="js/element-extras.js"></script>
+<script src="js/element-physics.js"></script>
+<script src="js/periodic-sim.js"></script>
+<script src="js/periodic-table.js"></script>
+<script src="js/atom-sim.js"></script>
+<script src="js/quantum-lab.js"></script>
+<script src="js/quantum-board.js"></script>
+<script src="js/notebook.js"></script>
+<script src="js/worked-examples.js"></script>
+<script src="js/main.js"></script>
+<script src="js/autopopulate.js"></script>
+
+<!-- 3D landing hero (three.js is vendored locally; degrades gracefully) -->
+<script src="vendor/three.min.js"></script>
+<script src="js/hero.js"></script>
 </body>
-</html> 
+</html>

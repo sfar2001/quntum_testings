@@ -123,6 +123,6 @@ The result: a rich, multi-tab physics lab that is **completely static** — perf
 I build interactive science &amp; engineering tools. If you like this, want a collaboration, or have an idea — I'd love to hear from you.
 
 - 💻 **GitHub** — [@sfar2001](https://github.com/sfar2001)
-- ✉️ **Email** — [adam@actimi.com](mailto:adam@actimi.com)
+- ✉️ **Email** — [adam@actimi.com](mailto:adam.sfar24@gmail.com)
 
 <p align="center"><sub>Designed &amp; built by <b>sfar2001</b> · quantum physics, made touchable.</sub></p>
